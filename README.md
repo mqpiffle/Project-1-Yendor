@@ -16,7 +16,7 @@ As a user, I want the ability to...
 - Fight the enemies on each dungeon level in succession to advance to the next level.  A portal to the next level will appear when the floor is cleared.
 - Pick up loot when defeating an enemy.  There will be no 'inventory' per se...only a weapon slot and a potion slot. (Maaaybe an armor slot if I have the time.)
 - Level up their character to level 5, picking a passive skill at each level. XP will be awarded for each monster defeated.
-- Use a small variety of active skills (I'm thinking 3, one auto-attack and two other cooldown-based skills) provided by their weapon. Each class has only one weapon type they can use (no swapping of weapons except when changing the waepon through looting.)  All weapons of a single type have the same skills, except better versions of the weapon may have better versions of the skills. 
+- Use a small variety of active skills (I'm thinking 3, one auto-attack and two other cooldown-based skills) provided by their weapon. Each class has only one weapon type they can use (no swapping of weapons except when changing the weapon through looting.)  All weapons of a single type have the same skills, except better versions of the weapon may have better versions of the skills. 
 - Manage their health and energy with a potion. The character can only carry one potion at a time.  If it is used they will have to find another to replace it.
 - On death or win (retrieve the Bauble of YENDOR) the character's name gets added to a high-score list for the session.  Top five scores are kept. Score will be XP gained - number of turns played + and set number for getting the bauble.
 - Return to main splash screen (can exit the game at any time.)
@@ -29,4 +29,33 @@ As a user, I want the ability to...
 ![the dungeon of yendor](./images/Game%20Screen%20(2).png)
 ![you win splash](./images/You%20win!.png)
 ![you lose splash](./images/You%20lose!!.png)
+## Implementation Details
+Do I use canvas or "plain" css/html?
 
+Classes needed:
+- Player
+- Enemy
+- Character Class (warrior/wizard/hunter)
+- Enemy 'Class' (type)
+- Skill
+- Weapon (Item)
+- Potion will be a "one-of-a-kind" item
+
+Functions needed:
+- turn counter
+- Health/energy counter
+- movement handler
+- "what do i do on my turn?"
+    - move
+    - drink potion
+    - attack
+- potion heal calc
+- attack calc (vs defense type)
+
+Other things to consider:
+- defense (armor) will just be a % of damage resistance calculation. 
+    - two types of resist: physical and magical
+    - three types of armor(phys res/mag res): 
+        - plated(80/20) (Warrior and melee enemies)
+        - dryad(50/50) (Hunter and ranged/some magic using enemies)
+        - robes(20/80) (Wizard and wizardly enemies)
