@@ -17,4 +17,8 @@ As a user, I want the ability to...
 - On death or win (retrieve the Bauble of YENDOR) the character's name gets added to a high-score list for the session.  Top five scores are kept. Score will be XP gained - number of turns played + and set number for getting the bauble.
 - Return to main splash screen (can exit the game at any time.)
 ## Wireframes
+![main splash screen](./images/Splash%20screen.png)
+![instructions](./images/Intructions.png)
+![character picker](./images/Create%20Character.png)
+![the dungeon of yendor](./images/Game%20Screen.png)
 ## Entity Relationship Diagrams
