@@ -22,7 +22,7 @@ As a user, I want the ability to...
 ![main splash screen](./images/Splash%20screen.png)
 ![instructions](./images/Intructions.png)
 ![character picker](./images/Create%20Character.png)
-![the dungeon of yendor](./images/Game%20Screen.png)
+![the dungeon of yendor](./images/Game%20Screen%20(2).png)
 ![you win splash](./images/You%20win!.png)
 ![you lose splash](./images/You%20lose!!.png)
 ## Entity Relationship Diagrams
