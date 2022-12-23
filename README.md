@@ -1,6 +1,10 @@
 # Dungeon of YENDOR
 ## Overview
 Dungeon of YENDOR draws inspiration from two of my favorite game genres: rougelikes and hack-and-slash ARPGs.  In essence, it's your character's quest to find the Bauble of Yendor, a very ancient magical artifact, which has been heisted by the powerful necromancer Zyxthbuul. The character will delve into a not-so-deep dungeon (3 floors) in hopes of retrieving the Bauble, happily slaying monsters and collecting loot (of course) along the way.  But beware!  Death is most final, and will only lead to starting over until the Bauble is retrieved and returned to the Lords of YENDOR.
+## Technology Used
+- HTML
+- CSS
+- javeScript (still debating whether to use canvas or just CSS grid)
 ## User Stories
 As a user, I want the ability to...
 - Read the game rules.
@@ -25,4 +29,4 @@ As a user, I want the ability to...
 ![the dungeon of yendor](./images/Game%20Screen%20(2).png)
 ![you win splash](./images/You%20win!.png)
 ![you lose splash](./images/You%20lose!!.png)
-## Entity Relationship Diagrams
+
