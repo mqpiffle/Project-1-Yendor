@@ -1,6 +1,6 @@
 # Dungeon of YENDOR
 ## Overview
-Dungeon of YENDOR draws inspiration from two of my favorite game genres: rougelikes and hack-and-slash ARPGs.  In essence, it's your character's quest to find the Bauble of Yendor, a very ancient magical artifact, which has been heisted by the powerful necromancer Zyxthbuul. The character will delve into a not-so-deep dungeon (3 floors) in hopes of retrieving the Bauble, happily slaying monsters and collecting loot (of course) along the way.  But beware!  Death is most final, and will only lead to starting over until the Bauble is retrieved.
+Dungeon of YENDOR draws inspiration from two of my favorite game genres: rougelikes and hack-and-slash ARPGs.  In essence, it's your character's quest to find the Bauble of Yendor, a very ancient magical artifact, which has been heisted by the powerful necromancer Zyxthbuul. The character will delve into a not-so-deep dungeon (3 floors) in hopes of retrieving the Bauble, happily slaying monsters and collecting loot (of course) along the way.  But beware!  Death is most final, and will only lead to starting over until the Bauble is retrieved and returned to the Lords of YENDOR.
 ## User Stories
 As a user, I want the ability to...
 - Read the game rules.
