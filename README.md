@@ -1,2 +1,2 @@
-# Project-1-Yendor
+# The Orb of YENDOR
 Project 1
