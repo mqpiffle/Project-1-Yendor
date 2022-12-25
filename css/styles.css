@@ -7,7 +7,7 @@
 body {
     font-size: 16px;
     width: 100vw;
-    background-color: hsl(0 0% 30%);
+    background-color: hsl(0 0% 10%);
 }
 
 #game-container {
