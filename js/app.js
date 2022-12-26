@@ -35,16 +35,8 @@ const mapDraw = () => {
 
 mapDraw()
 
-// call this function when the player either moves, attacks or uses a skill, drinks a potion, or picks up loot
 
-const endTurn = () => {
-    ctx.clearRect(0, 0, game.width, game.height)
-    mapDraw()
-    playerCharacter.render()
-    enemyCharacter.render()
-    turn++
-    console.log(turn)
-}
+
 
 const pcSpawnCoordinates = () => {
     //spawn pc within 3 tiles of any edge
@@ -72,15 +64,17 @@ const pcSpawnCoordinates = () => {
 
 const enemySpawnCoordinates = (pcPos) => {
     let coordinateTest = false
-    //spawn enemy(s) at least 5 tile from pc
-    let pcCoords = pcPos
+    //spawn enemy(s) at least 5 tiles away from pc
+    const pcCoordsRaw = pcPos
+    const pcCoords = pcCoordsRaw.map(coord => (coord - 15) / gridSize)
+    console.log(`normailzed pc coordinates ${pcCoords}`)
     let rndX = Math.floor(Math.random() * (game.width / gridSize))
     console.log(`initial enemy x: ${rndX}`)
     let rndY = Math.floor(Math.random() * (game.height / gridSize))
     console.log(`initial enemy y: ${rndY}`)
     let coordinates = []
     while (!coordinateTest) {
-        if (pcCoords[0] === rndX && pcCoords[1] === rndY) {
+        if (Math.abs(pcCoords[0] - rndX) < 5 && Math.abs(pcCoords[1] - rndY) < 5) {
             rndX = Math.floor(Math.random() * (game.width / gridSize))
             console.log(`new enemy x: ${rndX}`)
         } else {
@@ -91,6 +85,23 @@ const enemySpawnCoordinates = (pcPos) => {
     console.log(`enemy coordinates ${coordinates}`)
     return coordinates
     //cannot spawn where the is another enemy
+}
+
+const meleeAttack = (attacker, defender) => {
+    const incomingDamage = attacker.baseAttack - (attacker.baseAttack * defender.basePhysResist)
+    if (defender.baseHealth - incomingDamage <= 0) {
+        defender.alive = false
+    }
+    return incomingDamage
+}
+
+const detectEnemyCollision = (enemy) => {
+    if (playerCharacter.xPos === enemy.xPos && playerCharacter.yPos === enemy.yPos) {
+        console.log(`pc base attack is ${playerCharacter.baseAttack}`)
+        console.log(`enemy's health is ${enemy.baseHealth}`)
+        return enemy.baseHealth -= meleeAttack(playerCharacter, enemy)
+    }
+
 }
 
 // create character sprite and spawn
@@ -105,15 +116,17 @@ class MobileObject {
     this.alive = true
     this.baseHealth = 100
     this.baseEnergy = 100
-    this.baseAttack = 10
+    this.baseAttack = 50
     this.basePhysResist = 0
     this.baseMagResist = 0
     this.gridStep = gridSize
     this.render = function () {
-        ctx.beginPath()
-        ctx.arc(this.xPos, this.yPos, this.gridStep / 2, 0, 2.0 * Math.PI)
-        ctx.fillStyle = this.displayColor
-        ctx.fill()
+        if (this.alive) {
+            ctx.beginPath()
+            ctx.arc(this.xPos, this.yPos, this.gridStep / 2, 0, 2.0 * Math.PI)
+            ctx.fillStyle = this.displayColor
+            ctx.fill()
+            }
         }
     }
 }
@@ -168,20 +181,40 @@ const enemyCharacter = new EnemyCharacter('goblin', enemySpawnCoordinates(player
 playerCharacter.render()
 enemyCharacter.render()
 
+// call this function when the player either moves, attacks or uses a skill, drinks a potion, or picks up loot
+
+const endTurn = () => {
+    detectEnemyCollision(enemyCharacter)
+    console.log(`enemy's health is ${enemyCharacter.baseHealth}`)
+    ctx.clearRect(0, 0, game.width, game.height)
+    mapDraw()
+    playerCharacter.render()
+    if (enemyCharacter.alive) {
+        enemyCharacter.render()
+    }
+    turn++
+    console.log(turn)
+}
+
+
 // since the game is turn-based we can simply use the keypress method and pass that to our movement handler
 document.addEventListener('keypress', (e) => {
     playerCharacter.moveDirection(e.keyCode)
 })
 
 // **********NEXT STEPS***************
-// * 0) spawn pc within three tiles of an edge
-// 1) spawn an enemy in a random location at least 9 tiles away from the pc
-// 2) detect collision between pc and enemy
-// 3) have collision instantiate 'battle' - atk vs def and adjust health accordingly
-// 4) enemy tracks (moves) towards player!!
-// * 5) create movement boundaries which impede movement without advancing a turn
-// **************************************
+// *) spawn pc within three tiles of an edge
+// *) spawn an enemy in a random location at least 5 tiles away from the pc
+// *) detect collision between pc and enemy
+// 1) make it so one unit cannot move into square occupied by another unit
+// *) have collision instantiate 'battle' - atk vs def and adjust health accordingly
+// 2) FIX: defeated enemy is 'diappearing' from game but not being removed
+// 3) enemy tracks (moves) towards player!!
+// 4) spawn multiple enemies
+// *) create movement boundaries which impede movement without advancing a turn
 // create UI
+// **************************************
+
 
 // case 57:
                 //     this.yPos -= this.gridStep
