@@ -9,6 +9,8 @@ game.setAttribute('height', getComputedStyle(game)['height'])
 game.width = 900
 game.height = 900
 const gridSize = 30
+const tileCenter = gridSize / 2
+let turn = 0
 // presentational map board for development
 
 const checkerboard = (horiz, vert) => {
@@ -39,15 +41,47 @@ const endTurn = () => {
     ctx.clearRect(0, 0, game.width, game.height)
     mapDraw()
     playerCharacter.render()
+    turn++
+    console.log(turn)
+}
+
+const pcSpawnCoordinates = () => {
+    //spawn pc within 3 tiles of any edge
+    let coordinateTest = false
+    let rndWidth = Math.floor(Math.random() * (game.width / gridSize))
+    console.log(`initial x: ${rndWidth}`)
+    let rndHeight = Math.floor(Math.random() * (game.height / gridSize))
+    console.log(`initial y: ${rndHeight}`)
+    // console.log(`width within middle ${rndWidth >= 3 && rndWidth <= (game.width / gridSize) - 3}`)
+    // console.log(`height within middle ${rndHeight >= 3 && rndHeight <= (game.width / gridSize) - 3}`)
+    // console.log(`width within middle and height within middle ${(rndWidth >= 3 && rndWidth <= (game.width / gridSize) - 3) && (rndHeight >= 3 && rndHeight <= (game.height / gridSize) - 3)}`)
+    let coordinates = []
+    while (!coordinateTest) {
+        if ((rndWidth >= 3 && rndWidth < (game.width / gridSize) - 3) && (rndHeight >= 3 && rndHeight <= (game.height / gridSize) - 3)) {
+            rndWidth = Math.floor(Math.random() * (game.width / gridSize))
+            console.log(`new x: ${rndWidth}`)
+        } else {
+            coordinateTest = true
+        }
+    }
+    coordinates = [rndWidth * gridSize + tileCenter, rndHeight * gridSize + tileCenter]
+    console.log(`coordinates ${coordinates}`)
+    return coordinates
+}
+
+const enemySpawn = (pcPos) => {
+    //spawn enemy(s) at least 5 tile from pc
+    //cannot spawn where the is another enemy
 }
 
 // create character sprite and spawn
 // first create a basic MOB class with traits shared be friend and foe alike
 class MobileObject {
-    constructor (name, xPos, yPos, health, energy, displayColor, attackRating, physicalResist) {
+    constructor (name, gridPos, health, energy, displayColor, attackRating, physicalResist) {
     this.name = name
-    this.xPos = xPos
-    this.yPos = yPos
+    this.gridPos = gridPos
+    this.xPos = gridPos[0]
+    this.yPos = gridPos[1]
     this.health = health
     this.energy = energy
     this.displayColor = displayColor
@@ -68,54 +102,46 @@ class MobileObject {
 class PlayerCharacter extends MobileObject {
     // player movement handler
     moveDirection = function (key) {
-        // switch/case will work just fine here, since we are not interested in listening for multiple keypresses
         // we'll use the numPad for movement and explicitly define the diagonals
-
-        switch(key) {
-            case 56:
+        if (key === 56 ) {
+            if (this.yPos > tileCenter) {
                 this.yPos -= this.gridStep
                 console.log('up')
-                break
-            case 54:
+                endTurn()
+            }
+        }
+        if (key === 54) {
+            if (this.xPos < game.width - tileCenter) {
                 this.xPos += this.gridStep
                 console.log('right')
-                break
-            case 50:
+                endTurn()
+            }
+        }
+        if (key === 50) {
+            if (this.yPos < game.height - tileCenter) {
                 this.yPos += this.gridStep
                 console.log('down')
-                break
-            case 52:
+                endTurn()
+            } 
+        }
+        if (key === 52) {
+            if (this.xPos > tileCenter) {
                 this.xPos -= this.gridStep
                 console.log('left')
-                break
-            case 57:
-                this.yPos -= this.gridStep
-                this.xPos += this.gridStep
-                console.log('up-right')
-                break
-            case 51:
-                this.xPos += this.gridStep
-                this.yPos += this.gridStep
-                console.log('down-right')
-                break
-            case 49:
-                this.yPos += this.gridStep
-                this.xPos -= this.gridStep
-                console.log('down-left')
-                break
-            case 55:
-                this.xPos -= this.gridStep
-                this.yPos -= this.gridStep
-                console.log('up-left')
-                break
+                endTurn()
+            }
         }
-        endTurn()
     }
 }
 
+// class EnemyCharacter extends MobileObject {
+
+// }
+
 // create a player character instance and render it on the map with its initial traits
 
-const playerCharacter = new PlayerCharacter('Bob', 15, 15, 100, 100, 'limegreen', 20, 80)
+const playerCharacter = new PlayerCharacter('Bob', pcSpawnCoordinates(), 100, 100, 'limegreen', 20, 80)
+// const enemyCharacter = new EnemyCharacter('goblin', )
 playerCharacter.render()
 
 // since the game is turn-based we can simply use the keypress method and pass that to our movement handler
@@ -124,7 +150,32 @@ document.addEventListener('keypress', (e) => {
 })
 
 // **********NEXT STEPS***************
+// * 0) spawn pc within three tiles of an edge
 // 1) spawn an enemy in a random location at least 9 tiles away from the pc
 // 2) detect collision between pc and enemy
 // 3) have collision instantiate 'battle' - atk vs def and adjust health accordingly
 // 4) enemy tracks (moves) towards player!!
+// * 5) create movement boundaries which impede movement without advancing a turn
+// **************************************
+// create UI
+
+// case 57:
+                //     this.yPos -= this.gridStep
+                //     this.xPos += this.gridStep
+                //     console.log('up-right')
+                //     break
+                // case 51:
+                //     this.xPos += this.gridStep
+                //     this.yPos += this.gridStep
+                //     console.log('down-right')
+                //     break
+                // case 49:
+                //     this.yPos += this.gridStep
+                //     this.xPos -= this.gridStep
+                //     console.log('down-left')
+                //     break
+                // case 55:
+                //     this.xPos -= this.gridStep
+                //     this.yPos -= this.gridStep
+                //     console.log('up-left')
+                //     break
