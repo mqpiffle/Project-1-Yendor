@@ -41,6 +41,7 @@ const endTurn = () => {
     ctx.clearRect(0, 0, game.width, game.height)
     mapDraw()
     playerCharacter.render()
+    enemyCharacter.render()
     turn++
     console.log(turn)
 }
@@ -48,46 +49,65 @@ const endTurn = () => {
 const pcSpawnCoordinates = () => {
     //spawn pc within 3 tiles of any edge
     let coordinateTest = false
-    let rndWidth = Math.floor(Math.random() * (game.width / gridSize))
-    console.log(`initial x: ${rndWidth}`)
-    let rndHeight = Math.floor(Math.random() * (game.height / gridSize))
-    console.log(`initial y: ${rndHeight}`)
+    let rndX = Math.floor(Math.random() * (game.width / gridSize))
+    console.log(`initial pc x: ${rndX}`)
+    let rndY = Math.floor(Math.random() * (game.height / gridSize))
+    console.log(`initial pc y: ${rndY}`)
     // console.log(`width within middle ${rndWidth >= 3 && rndWidth <= (game.width / gridSize) - 3}`)
     // console.log(`height within middle ${rndHeight >= 3 && rndHeight <= (game.width / gridSize) - 3}`)
     // console.log(`width within middle and height within middle ${(rndWidth >= 3 && rndWidth <= (game.width / gridSize) - 3) && (rndHeight >= 3 && rndHeight <= (game.height / gridSize) - 3)}`)
     let coordinates = []
     while (!coordinateTest) {
-        if ((rndWidth >= 3 && rndWidth < (game.width / gridSize) - 3) && (rndHeight >= 3 && rndHeight <= (game.height / gridSize) - 3)) {
-            rndWidth = Math.floor(Math.random() * (game.width / gridSize))
-            console.log(`new x: ${rndWidth}`)
+        if ((rndX >= 3 && rndX < (game.width / gridSize) - 3) && (rndY >= 3 && rndY <= (game.height / gridSize) - 3)) {
+            rndX = Math.floor(Math.random() * (game.width / gridSize))
+            console.log(`new pc x: ${rndX}`)
         } else {
             coordinateTest = true
         }
     }
-    coordinates = [rndWidth * gridSize + tileCenter, rndHeight * gridSize + tileCenter]
-    console.log(`coordinates ${coordinates}`)
+    coordinates = [rndX * gridSize + tileCenter, rndY * gridSize + tileCenter]
+    console.log(`pc coordinates ${coordinates}`)
     return coordinates
 }
 
-const enemySpawn = (pcPos) => {
+const enemySpawnCoordinates = (pcPos) => {
+    let coordinateTest = false
     //spawn enemy(s) at least 5 tile from pc
+    let pcCoords = pcPos
+    let rndX = Math.floor(Math.random() * (game.width / gridSize))
+    console.log(`initial enemy x: ${rndX}`)
+    let rndY = Math.floor(Math.random() * (game.height / gridSize))
+    console.log(`initial enemy y: ${rndY}`)
+    let coordinates = []
+    while (!coordinateTest) {
+        if (pcCoords[0] === rndX && pcCoords[1] === rndY) {
+            rndX = Math.floor(Math.random() * (game.width / gridSize))
+            console.log(`new enemy x: ${rndX}`)
+        } else {
+            coordinateTest = true
+        }
+    }
+    coordinates = [rndX * gridSize + tileCenter, rndY * gridSize + tileCenter]
+    console.log(`enemy coordinates ${coordinates}`)
+    return coordinates
     //cannot spawn where the is another enemy
 }
 
 // create character sprite and spawn
 // first create a basic MOB class with traits shared be friend and foe alike
 class MobileObject {
-    constructor (name, gridPos, health, energy, displayColor, attackRating, physicalResist) {
+    constructor (name, gridPos) {
     this.name = name
     this.gridPos = gridPos
     this.xPos = gridPos[0]
     this.yPos = gridPos[1]
-    this.health = health
-    this.energy = energy
-    this.displayColor = displayColor
+    this.displayColor = 'skyBlue'
     this.alive = true
-    this.attackRating = attackRating
-    this.physicalResist = physicalResist
+    this.baseHealth = 100
+    this.baseEnergy = 100
+    this.baseAttack = 10
+    this.basePhysResist = 0
+    this.baseMagResist = 0
     this.gridStep = gridSize
     this.render = function () {
         ctx.beginPath()
@@ -134,15 +154,19 @@ class PlayerCharacter extends MobileObject {
     }
 }
 
-// class EnemyCharacter extends MobileObject {
-
-// }
+class EnemyCharacter extends MobileObject {
+    constructor(displayColor, gridPos) {
+        super(displayColor, gridPos)
+        this.displayColor = 'crimson'
+    }
+}
 
 // create a player character instance and render it on the map with its initial traits
 
-const playerCharacter = new PlayerCharacter('Bob', pcSpawnCoordinates(), 100, 100, 'limegreen', 20, 80)
-// const enemyCharacter = new EnemyCharacter('goblin', )
+const playerCharacter = new PlayerCharacter('Bob', pcSpawnCoordinates())
+const enemyCharacter = new EnemyCharacter('goblin', enemySpawnCoordinates(playerCharacter.gridPos))
 playerCharacter.render()
+enemyCharacter.render()
 
 // since the game is turn-based we can simply use the keypress method and pass that to our movement handler
 document.addEventListener('keypress', (e) => {
