@@ -195,30 +195,22 @@ class PlayerCharacter extends MobileObject {
             // we'll use the numPad for movement and explicitly define the diagonals
             if (key === 56) {
                 if (detectEnemyCollision(this.xPos, this.yPos - this.gridStep) === false && this.yPos > tileCenter) {
-                    this.yPos -= this.gridStep
-                    // console.log('up')
-                    endTurn()
+                    this.moveUp()
                 }
             }
             if (key === 54) {
                 if (detectEnemyCollision(this.xPos + this.gridStep, this.yPos) === false && this.xPos < game.width - tileCenter) {                        
-                    this.xPos += this.gridStep
-                    // console.log('right')
-                    endTurn()
+                    this.moveRight()
                 }
             }
             if (key === 50) {
                 if (detectEnemyCollision(this.xPos, this.yPos +this.gridStep) === false && this.yPos < game.height - tileCenter) {
-                    this.yPos += this.gridStep
-                    // console.log('down')
-                    endTurn()
+                    this.moveDown()
                 } 
             }
             if (key === 52) {
                 if (detectEnemyCollision(this.xPos - this.gridStep, this.yPos) === false && this.xPos > tileCenter) {
-                    this.xPos -= this.gridStep
-                    // console.log('left')
-                    endTurn()
+                    this.moveLeft()
             }
         }
     }
@@ -231,12 +223,6 @@ class EnemyCharacter extends MobileObject {
         this.displayColor = 'darkRed'
         this.type = 'ENEMY'
     }
-    moveUp = function() {
-        this.yPos -= this.gridStep
-        // console.log('up')
-        endTurn()
-    }
-    move
 }
 
 // create a player character instance and render it on the map with its initial traits
