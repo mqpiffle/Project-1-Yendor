@@ -11,7 +11,7 @@ game.height = 900
 const gridSize = 30
 const tileCenter = gridSize / 2
 const enemies = []
-const occupiedTiles = []
+let occupiedTiles = []
 const openTiles = []
 let turn = 0
 
@@ -60,6 +60,7 @@ const pcSpawnCoordinates = () => {
     }
     coordinates = [rndX * gridSize + tileCenter, rndY * gridSize + tileCenter]
     console.log(`pc coordinates ${coordinates}`)
+    occupiedTiles.push(coordinates)
     return coordinates
 }
 
@@ -77,7 +78,7 @@ const enemySpawnCoordinates = () => {
     let rndY = Math.floor(Math.random() * (game.height / gridSize))
     console.log(`initial enemy y: ${rndY}`)
     let coordinates = []
-    const filterTest = occupiedTiles?.filter(coords => coords[0] === rndX && coords[1] === rndY)
+    const filterTest = occupiedTiles.filter(coords => coords[0] === rndX && coords[1] === rndY)
     while (!coordinateTest) {
         // if the difference between either (X/Y) of pc and enemy is less than 5 OR
         // if the coordinates already exist in the occupied tiles grid
@@ -103,7 +104,7 @@ const enemySpawnCoordinates = () => {
 
 const spawnEnemies = (numberToSpawn) => {
     for (let i = 0; i < numberToSpawn; i++) {
-        let goblin = new EnemyCharacter(`goblin${[i]}`, enemySpawnCoordinates(playerCharacter.gridPos))
+        let goblin = new EnemyCharacter(`${[i]}`, enemySpawnCoordinates(playerCharacter.gridPos))
         enemies.push(goblin)
         goblin.render()
     }
@@ -117,7 +118,7 @@ const meleeAttack = (attacker, defender) => {
     return incomingDamage
 }
 
-const detectEnemyCollision = (targetTileX, targetTileY) => {
+const willCollide = (targetTileX, targetTileY) => {
     let collisionDetected = false
     while(!collisionDetected){
         for (let i = 0; i < occupiedTiles.length; i++) {
@@ -142,45 +143,70 @@ const enemyMove = () => {
 // first create a basic MOB class with traits shared be friend and foe alike
 class MobileObject {
     constructor (uid, gridPos) {
-    this.uid = uid
-    this.gridPos = gridPos
-    this.xPos = this.gridPos[0]
-    this.yPos = this.gridPos[1]
-    this.type = 'MOB'
-    this.alive = true
-    this.baseHealth = 100
-    this.baseEnergy = 100
-    this.baseAttack = 50
-    this.basePhysResist = 0
-    this.baseMagResist = 0
-    this.gridStep = 30
-    this.render = function () {
-        if (this.alive) {
-            ctx.beginPath()
-            ctx.arc(this.xPos, this.yPos, this.gridStep / 2, 0, 2.0 * Math.PI)
-            ctx.fillStyle = this.displayColor
-            ctx.fill()
+        this.uid = uid
+        this.gridPos = gridPos
+        this.xPos = this.gridPos[0]
+        this.yPos = this.gridPos[1]
+        this.type = 'MOB'
+        this.alive = true
+        this.baseHealth = 100
+        this.baseEnergy = 100
+        this.baseAttack = 50
+        this.basePhysResist = 0
+        this.baseMagResist = 0
+        this.gridStep = 30
+        
+        this.moveUp = function() {
+            if (willCollide(this.xPos, this.yPos - this.gridStep) === false && this.yPos > tileCenter) {
+                this.yPos -= this.gridStep
             }
+            // console.log('up')
         }
-    this.moveUp = function() {
-        this.yPos -= this.gridStep
-        // console.log('up')
-        endTurn()
+        this.moveUpRight = function() {
+            if (willCollide(this.xPos + this.gridStep, this.yPos - this.gridStep) === false && this.yPos > tileCenter && this.xPos < game.width - tileCenter) {
+                this.yPos -= this.gridStep
+                this.xPos += this.gridStep
+            }
+            // console.log('up-right')
         }
-    this.moveRight = function() {
-        this.xPos += this.gridStep
-        // console.log('right')
-        endTurn()
+        this.moveRight = function() {
+            if (willCollide(this.xPos + this.gridStep, this.yPos) === false && this.xPos < game.width - tileCenter) {
+                this.xPos += this.gridStep
+            }
+            // console.log('right')
         }
-    this.moveDown = function() {
-        this.yPos += this.gridStep
-        // console.log('down')
-        endTurn()
+        this.moveDownRight = function() {
+            if (willCollide(this.xPos + this.gridStep, this.yPos + this.gridStep) === false && this.yPos < game.height - tileCenter && this.xPos < game.width - tileCenter ) {
+            this.yPos += this.gridStep
+            this.xPos += this.gridStep
+            }
+            // console.log('down-right')
         }
-    this.moveLeft = function() {
-        this.xPos -= this.gridStep
-        // console.log('left')
-        endTurn()
+        this.moveDown = function() {
+            if (willCollide(this.xPos, this.yPos + this.gridStep) === false && this.yPos < game.height - tileCenter) {
+                this.yPos += this.gridStep
+            }
+            // console.log('down')
+        }
+        this.moveDownLeft = function() {
+            if (willCollide(this.xPos - this.gridStep, this.yPos + this.gridStep) === false && this.yPos < game.height - tileCenter && this.xPos > tileCenter) {
+                this.yPos += this.gridStep
+                this.xPos -= this.gridStep
+            }
+            // console.log('down-left')
+        }
+        this.moveLeft = function() {
+            if (willCollide(this.xPos - this.gridStep, this.yPos) === false && this.xPos > tileCenter) {
+                this.xPos -= this.gridStep
+            }
+            // console.log('left')
+        }
+        this.moveUpLeft = function() {
+            if (willCollide(this.xPos - this.gridStep, this.yPos - this.gridStep) === false && this.yPos > tileCenter && this.xPos > tileCenter) {
+                this.yPos -= this.gridStep
+                this.xPos -= this.gridStep
+            }
+            // console.log('up-left')
         }
     }
 }
@@ -191,28 +217,47 @@ class PlayerCharacter extends MobileObject {
         super(uid, gridPos)
         this.displayColor = 'skyBlue'
     }
-        moveDirection = function(key) {
-            // we'll use the numPad for movement and explicitly define the diagonals
-            if (key === 56) {
-                if (detectEnemyCollision(this.xPos, this.yPos - this.gridStep) === false && this.yPos > tileCenter) {
-                    this.moveUp()
-                }
-            }
-            if (key === 54) {
-                if (detectEnemyCollision(this.xPos + this.gridStep, this.yPos) === false && this.xPos < game.width - tileCenter) {                        
-                    this.moveRight()
-                }
-            }
-            if (key === 50) {
-                if (detectEnemyCollision(this.xPos, this.yPos +this.gridStep) === false && this.yPos < game.height - tileCenter) {
-                    this.moveDown()
-                } 
-            }
-            if (key === 52) {
-                if (detectEnemyCollision(this.xPos - this.gridStep, this.yPos) === false && this.xPos > tileCenter) {
-                    this.moveLeft()
-            }
+    render = function () {
+        ctx.beginPath()
+        ctx.arc(this.xPos, this.yPos, this.gridStep / 2, 0, 2.0 * Math.PI)
+        ctx.fillStyle = this.displayColor
+        ctx.fill()
         }
+    moveDirection = function(key) {
+        // we'll use the numPad for movement and explicitly define the diagonals
+        if (key === 56) {
+            // if (willCollide(this.xPos, this.yPos - this.gridStep) === false && this.yPos > tileCenter) {
+                this.moveUp()
+        }
+        if (key === 57) {
+            // if (willCollide(this.xPos, this.yPos - this.gridStep) === false && this.yPos > tileCenter) {
+                this.moveUpRight()
+        }
+        if (key === 54) {
+            // if (willCollide(this.xPos + this.gridStep, this.yPos) === false && this.xPos < game.width - tileCenter) {                        
+                this.moveRight()
+        }
+        if (key === 51) {
+            // if (willCollide(this.xPos, this.yPos - this.gridStep) === false && this.yPos > tileCenter) {
+                this.moveDownRight()
+        }
+        if (key === 50) {
+            // if (willCollide(this.xPos, this.yPos +this.gridStep) === false && this.yPos < game.height - tileCenter) {
+                this.moveDown()
+        }
+        if (key === 49) {
+            // if (willCollide(this.xPos, this.yPos - this.gridStep) === false && this.yPos > tileCenter) {
+                this.moveDownLeft()
+        }
+        if (key === 52) {
+            // if (willCollide(this.xPos - this.gridStep, this.yPos) === false && this.xPos > tileCenter) {
+                this.moveLeft()
+        }
+        if (key === 55) {
+            // if (willCollide(this.xPos, this.yPos - this.gridStep) === false && this.yPos > tileCenter) {
+                this.moveUpLeft()
+        }
+        endTurn()
     }
 }
 
@@ -220,8 +265,50 @@ class EnemyCharacter extends MobileObject {
     constructor(uid, gridPos) {
         super(uid, gridPos)
         this.uid = uid
-        this.displayColor = 'darkRed'
+        this.displayColor = 'hotPink'
         this.type = 'ENEMY'
+    }
+    render = function () {
+        ctx.font = '24px sans-serif'
+        // ctx.textBaseLine = 'middle'
+        ctx.textAlign = 'center'
+        ctx.fillStyle = this.displayColor
+        ctx.fillText(`${this.uid}`, this.xPos, this.yPos + 8)
+        }
+    moveEnemy = function() {
+        const pcX = playerCharacter.xPos
+        const pcY = playerCharacter.yPos
+        const x = this.xPos
+        const y = this.yPos
+        if (Math.abs(pcY - y) === Math.abs(pcX - x)) {
+            if (pcY < y && pcX > x) {
+                this.moveUpRight()
+            }
+            if (pcY > y && pcX > x) {
+                this.moveDownRight()
+            }
+            if (pcY > y && pcX < x) {
+                this.moveDownLeft()
+            }
+            if (pcY < y && pcX < x) {
+                this.moveUpLeft()
+            }
+        }
+        if (Math.abs(pcY - y) > Math.abs(pcX - x)) {
+            if (pcY < y) {
+                this.moveUp()
+            }
+            if (pcY > y) {
+                this.moveDown()
+            }
+        } else {
+            if (pcX > x) {
+                this.moveRight()
+            }
+            if (pcX < x) {
+                this.moveLeft()
+            }
+        }
     }
 }
 
@@ -234,12 +321,17 @@ spawnEnemies(5)
 // call this function when the player either moves, attacks or uses a skill, drinks a potion, or picks up loot
 
 const endTurn = () => {
+    occupiedTiles = []
     ctx.clearRect(0, 0, game.width, game.height)
     mapDraw()
+    occupiedTiles.push([playerCharacter.xPos, playerCharacter.yPos])
     playerCharacter.render()
     enemies.forEach(enemy => {
+        enemy.moveEnemy()
+        occupiedTiles.push([enemy.xPos, enemy.yPos])
         enemy.render()
     })
+    console.log(occupiedTiles)
     turn++
     console.log(turn)
 }
@@ -254,13 +346,16 @@ document.addEventListener('keypress', (e) => {
 // *) spawn pc within three tiles of an edge
 // *) spawn an enemy in a random location at least 5 tiles away from the pc
 // *) detect collision between pc and enemy
-// !) define what a tile is and use tile coords instead of pixel coords
-// 1) make it so one unit cannot move into square occupied by another unit
+// *) make it so one unit cannot move into square occupied by another unit
 // *) have collision instantiate 'battle' - atk vs def and adjust health accordingly
 // 2) FIX: defeated enemy is 'diappearing' from game but not being removed
-// 3) enemy tracks (moves) towards player!!
+// *) enemy tracks (moves) towards player!!
 // *) spawn multiple enemies
 // *) create movement boundaries which impede movement without advancing a turn
+// 1) enemy collision - stop from colliding with other enemies && pc ** SO CLOSE!!
+// ???? Instead of clearing out entire array, somehow log occupiedTiles index of MOB, then use splice() to change the x/y positions ????
+
+// 2) refactor spawn code - take in param such that if(param) executes its own while loop, since the rest is basically the same
 // create UI
 // **************************************
 
