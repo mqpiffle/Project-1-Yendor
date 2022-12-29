@@ -10,9 +10,10 @@ game.width = 900
 game.height = 900
 const gridSize = 30
 const tileCenter = gridSize / 2
-const enemies = []
-let occupiedTiles = []
-const openTiles = []
+// actorListList is a list of all mobile objects currently in play
+// the actorListList[0] will always be at position [0]
+const actorList = []
+
 let turn = 0
 
 // presentational map board for development
@@ -43,9 +44,9 @@ const pcSpawnCoordinates = () => {
     //spawn pc within 3 tiles of any edge
     let coordinateTest = false
     let rndX = Math.floor(Math.random() * (game.width / gridSize))
-    console.log(`initial pc x: ${rndX}`)
+    // console.log(`initial pc x: ${rndX}`)
     let rndY = Math.floor(Math.random() * (game.height / gridSize))
-    console.log(`initial pc y: ${rndY}`)
+    // console.log(`initial pc y: ${rndY}`)
     // console.log(`width within middle ${rndWidth >= 3 && rndWidth <= (game.width / gridSize) - 3}`)
     // console.log(`height within middle ${rndHeight >= 3 && rndHeight <= (game.width / gridSize) - 3}`)
     // console.log(`width within middle and height within middle ${(rndWidth >= 3 && rndWidth <= (game.width / gridSize) - 3) && (rndHeight >= 3 && rndHeight <= (game.height / gridSize) - 3)}`)
@@ -53,14 +54,14 @@ const pcSpawnCoordinates = () => {
     while (!coordinateTest) {
         if ((rndX >= 3 && rndX < (game.width / gridSize) - 3) && (rndY >= 3 && rndY <= (game.height / gridSize) - 3)) {
             rndX = Math.floor(Math.random() * (game.width / gridSize))
-            console.log(`new pc x: ${rndX}`)
+            // console.log(`new pc x: ${rndX}`)
         } else {
             coordinateTest = true
         }
     }
+    
     coordinates = [rndX * gridSize + tileCenter, rndY * gridSize + tileCenter]
-    console.log(`pc coordinates ${coordinates}`)
-    occupiedTiles.push(coordinates)
+    // console.log(`pc coordinates ${coordinates}`)
     return coordinates
 }
 
@@ -68,21 +69,20 @@ const enemySpawnCoordinates = () => {
     let coordinateTest = false
     //spawn enemy(s) at least 5 tiles away from pc
     //get player coordinates
-    const pcCoordsRaw = playerCharacter.gridPos
+    const pcCoordsRaw = actorList[0].gridPos
     //'normalize' player coordinates
     const pcCoords = pcCoordsRaw.map(coord => (coord - 15) / gridSize)
-    console.log(`normailzed pc coordinates ${pcCoords}`)
+    // console.log(`normailzed pc coordinates ${pcCoords}`)
     //random X and Y, bound by the visible grid
     let rndX = Math.floor(Math.random() * (game.width / gridSize))
-    console.log(`initial enemy x: ${rndX}`)
+    // console.log(`initial enemy x: ${rndX}`)
     let rndY = Math.floor(Math.random() * (game.height / gridSize))
-    console.log(`initial enemy y: ${rndY}`)
+    // console.log(`initial enemy y: ${rndY}`)
     let coordinates = []
-    const filterTest = occupiedTiles.filter(coords => coords[0] === rndX && coords[1] === rndY)
     while (!coordinateTest) {
         // if the difference between either (X/Y) of pc and enemy is less than 5 OR
         // if the coordinates already exist in the occupied tiles grid
-        if ((Math.abs(pcCoords[0] - rndX) < 5 && Math.abs(pcCoords[1] - rndY) < 5) || (occupiedTiles > 0 && filterTest)) {
+        if ((Math.abs(pcCoords[0] - rndX) < 5 && Math.abs(pcCoords[1] - rndY) < 5) && (playerCharacter.xPos === rndX && playerCharacter.yPos === rndY)) {
             //rerollX
             rndX = Math.floor(Math.random() * (game.width / gridSize))
             rndY = Math.floor(Math.random() * (game.height / gridSize))
@@ -93,30 +93,27 @@ const enemySpawnCoordinates = () => {
     }
     //the re-un-normalized coordinates
     coordinates = [rndX * gridSize + tileCenter, rndY * gridSize + tileCenter]
-    console.log(`enemy coordinates ${coordinates}`)
+
+    // console.log(`enemy coordinates ${coordinates}`)
     //add these coords to an array for future testing
-    occupiedTiles.push(coordinates)
-    console.log(`enemy occupied tiles array: ${occupiedTiles}`)
+    // console.log(`enemy occupied tiles array: ${occupiedTiles}`)
     //gimme
     return coordinates
-    //cannot spawn where the is another enemy
 }
 
-const spawnEnemies = (numberToSpawn) => {
-    for (let i = 0; i < numberToSpawn; i++) {
-        let goblin = new EnemyCharacter(`goblin${[i]}`, i + 1, enemySpawnCoordinates())
-        enemies.push(goblin)
-        goblin.render()
+const enemySpawn = (numberToSpawn) => {
+    for (let i = 1; i <= numberToSpawn; i++) {
+        let enemy = new EnemyCharacter(`enemy${[i]}`, i, enemySpawnCoordinates())
+        actorList.push(enemy)
+        enemy.render('hotPink')
     }
 }
 
-
-
-const willCollide = (targetTileX, targetTileY) => {
+const isCollision = (targetTileX, targetTileY) => {
     let collisionDetected = false
     while(!collisionDetected){
-        for (let i = 0; i < occupiedTiles.length; i++) {
-            if (targetTileX === occupiedTiles[i][0] && targetTileY === occupiedTiles[i][1]) {
+        for (let i = 0; i < actorList.length; i++) {
+            if (targetTileX === actorList[i].xPos && targetTileY === actorList[i].yPos) {
                 console.log(`COLLISON DETECTED`)
                 collisionDetected = true
                 return collisionDetected
@@ -126,23 +123,33 @@ const willCollide = (targetTileX, targetTileY) => {
     }
 }
 
-const enemyMove = () => {
-    //if the player is adjacent, auto attack
-    //check enemyX vs playerX and enemyY vs playerY
-    //whichever is greater(default to x), move that direction towards the player
-    //if there's not another enemy in target tile, else move the other dimension
+const actorAt = (targetTileX, targetTileY) => {
+    let actor
+    // find the actor[index] with the given coordinates
+    for (let i = 0; i < actorList.length; i++) {
+        if (actorList[i].xPos === targetTileX && actorList[i].yPos === targetTileY) {
+            actor = actorList[i]
+            return actor
+        }
+    }
+}
+
+const enemyDefeat = (enemy) => {
+    enemy.isAlive = false
+    enemy.render('transparent')
+    actorList.splice(enemy.actorListArrayPos, 1)
 }
 
 // create character sprite and spawn
 // first create a basic MOB class with traits shared be friend and foe alike
 class MobileObject {
-    constructor (uid, occupiedTileArrayPos, gridPos) {
+    constructor (uid, actorListArrayPos, gridPos) {
         this.uid = uid
         this.gridPos = gridPos
-        this.occupiedTileArrayPos = occupiedTileArrayPos
+        this.actorListArrayPos = actorListArrayPos
         this.xPos = this.gridPos[0]
         this.yPos = this.gridPos[1]
-        this.type = 'MOB'
+        this.characterType = 'MOB'
         this.alive = true
         this.baseHealth = 100
         this.baseEnergy = 100
@@ -159,133 +166,187 @@ class MobileObject {
         return defenderHealth
     }
     moveUp = function() {
-        if (!willCollide(this.xPos, this.yPos - gridSize) && this.yPos > tileCenter) {
+        const targetAt = actorAt(this.xPos, this.yPos - gridSize)
+        if (!isCollision(this.xPos, this.yPos - gridSize) && this.yPos > tileCenter) {
             this.yPos -= gridSize
+        } else if (isCollision(this.xPos, this.yPos - gridSize) && this.enemyType === targetAt.characterType) {
+            targetAt.baseHealth = this.meleeAttack(targetAt)
+            console.log(targetAt.baseHealth)
+            if (targetAt.characterType === 'ENEMY' && targetAt.baseHealth <= 0) {
+                enemyDefeat(targetAt)
+            }
         }
         // console.log('up')
     }
     moveUpRight = function() {
-        if (!willCollide(this.xPos + gridSize, this.yPos - gridSize) && this.yPos > tileCenter && this.xPos < game.width - tileCenter) {
+        const targetAt = actorAt(this.xPos + gridSize, this.yPos - gridSize)
+        if (!isCollision(this.xPos + gridSize, this.yPos - gridSize) && this.yPos > tileCenter && this.xPos < game.width - tileCenter) {
             this.yPos -= gridSize
             this.xPos += gridSize
+        } else if (isCollision(this.xPos + gridSize, this.yPos - gridSize) && this.enemyType === targetAt.characterType) {
+            targetAt.baseHealth = this.meleeAttack(targetAt)
+            console.log(targetAt.baseHealth)
+            if (targetAt.characterType === 'ENEMY' && targetAt.baseHealth <= 0) {
+                enemyDefeat(targetAt)
+            }
         }
         // console.log('up-right')
     }
     moveRight = function() {
-        if (!willCollide(this.xPos + gridSize, this.yPos) && this.xPos < game.width - tileCenter) {
+        const targetAt = actorAt(this.xPos + gridSize, this.yPos)
+        if (!isCollision(this.xPos + gridSize, this.yPos) && this.xPos < game.width - tileCenter) {
             this.xPos += gridSize
+        } else if (isCollision(this.xPos + gridSize, this.yPos) && this.enemyType === targetAt.characterType) {
+            targetAt.baseHealth = this.meleeAttack(targetAt)
+            console.log(targetAt.baseHealth)
+            if (targetAt.characterType === 'ENEMY' && targetAt.baseHealth <= 0) {
+                enemyDefeat(targetAt)
+            }
         }
         // console.log('right')
     }
     moveDownRight = function() {
-        if (!willCollide(this.xPos + gridSize, this.yPos + gridSize) && this.yPos < game.height - tileCenter && this.xPos < game.width - tileCenter ) {
+        const targetAt = actorAt(this.xPos + gridSize, this.yPos + gridSize)
+        if (!isCollision(this.xPos + gridSize, this.yPos + gridSize) && this.yPos < game.height - tileCenter && this.xPos < game.width - tileCenter ) {
         this.yPos += gridSize
         this.xPos += gridSize
+        } else if (isCollision(this.xPos + gridSize, this.yPos + gridSize) && this.enemyType === targetAt.characterType) {
+            targetAt.baseHealth = this.meleeAttack(targetAt)
+            console.log(targetAt.baseHealth)
+            if (targetAt.characterType === 'ENEMY' && targetAt.baseHealth <= 0) {
+                enemyDefeat(targetAt)
+            }
         }
         // console.log('down-right')
     }
     moveDown = function() {
-        if (!willCollide(this.xPos, this.yPos + gridSize) && this.yPos < game.height - tileCenter) {
+        const targetAt = actorAt(this.xPos, this.yPos + gridSize)
+        if (!isCollision(this.xPos, this.yPos + gridSize) && this.yPos < game.height - tileCenter) {
             this.yPos += gridSize
+        } else if (isCollision(this.xPos, this.yPos + gridSize) && this.enemyType === targetAt.characterType) {
+            targetAt.baseHealth = this.meleeAttack(targetAt)
+            console.log(targetAt.baseHealth)
+            if (targetAt.characterType === 'ENEMY' && targetAt.baseHealth <= 0) {
+                enemyDefeat(targetAt)
+            }
         }
         // console.log('down')
     }
     moveDownLeft = function() {
-        if (!willCollide(this.xPos - gridSize, this.yPos + gridSize) && this.yPos < game.height - tileCenter && this.xPos > tileCenter) {
+        const targetAt = actorAt(this.xPos - gridSize, this.yPos + gridSize)
+        if (!isCollision(this.xPos - gridSize, this.yPos + gridSize) && this.yPos < game.height - tileCenter && this.xPos > tileCenter) {
             this.yPos += gridSize
             this.xPos -= gridSize
+        } else if (isCollision(this.xPos - gridSize, this.yPos + gridSize) && this.enemyType === targetAt.characterType) {
+            targetAt.baseHealth = this.meleeAttack(targetAt)
+            console.log(targetAt.baseHealth)
+            if (targetAt.characterType === 'ENEMY' && targetAt.baseHealth <= 0) {
+                enemyDefeat(targetAt)
+            }
         }
         // console.log('down-left')
     }
     moveLeft = function() {
-        if (!willCollide(this.xPos - gridSize, this.yPos) && this.xPos > tileCenter) {
+        const targetAt = actorAt(this.xPos - gridSize, this.yPos)
+        if (!isCollision(this.xPos - gridSize, this.yPos) && this.xPos > tileCenter) {
             this.xPos -= gridSize
+        } else if (isCollision(this.xPos - gridSize, this.yPos) && this.enemyType === targetAt.characterType) {
+            targetAt.baseHealth = this.meleeAttack(targetAt)
+            console.log(targetAt.baseHealth)
+            if (targetAt.characterType === 'ENEMY' && targetAt.baseHealth <= 0) {
+                enemyDefeat(targetAt)
+            }
         }
         // console.log('left')
     }
     moveUpLeft = function() {
-        if (!willCollide(this.xPos - gridSize, this.yPos - gridSize) && this.yPos > tileCenter && this.xPos > tileCenter) {
+        const targetAt = actorAt(this.xPos - gridSize, this.yPos - gridSize)
+        if (!isCollision(this.xPos - gridSize, this.yPos - gridSize) && this.yPos > tileCenter && this.xPos > tileCenter) {
             this.yPos -= gridSize
             this.xPos -= gridSize
+        } else if (isCollision(this.xPos - gridSize, this.yPos - gridSize) && this.enemyType === targetAt.characterType) {
+            targetAt.baseHealth = this.meleeAttack(targetAt)
+            console.log(targetAt.baseHealth)
+            if (targetAt.characterType === 'ENEMY' && targetAt.baseHealth <= 0) {
+                enemyDefeat(targetAt)
+            }
         }
     }
 }
 
 // the player character inherits the MOB's traits, and adds its own (specifically move and other action methods)
 class PlayerCharacter extends MobileObject {
-    constructor (uid, occupiedTileArrayPos, gridPos) {
-        super(uid, occupiedTileArrayPos, gridPos)
+    constructor (uid, actorListArrayPos, gridPos, characterType, baseAttack) {
+        super(uid, actorListArrayPos, gridPos, characterType, baseAttack)
+        this.characterType = 'PC'
+        this.enemyType = 'ENEMY'
         this.displayColor = 'skyBlue'
+        this.baseAttack = 50
     }
     render = function () {
         ctx.beginPath()
-        ctx.arc(this.xPos, this.yPos, gridSize / 2, 0, 2.0 * Math.PI)
+        ctx.arc(this.xPos, this.yPos, gridSize / 3, 0, 2.0 * Math.PI)
         ctx.fillStyle = this.displayColor
         ctx.fill()
         }
     movementHandler = function(key) {
         // we'll use the numPad for movement and explicitly define the diagonals
         if (key === 56) {
-
-        // if (willCollide(this.xPos, this.yPos - gridSize) && this.attackType === 'MELEE') {
-        //     this.baseHealth = this.meleeAttack()
-        // }
-            // if (willCollide(this.xPos, this.yPos - gridSize) === false && this.yPos > tileCenter) {
-                this.moveUp()
+            // if (isCollision(this.xPos, this.yPos - gridSize) === false && this.yPos > tileCenter) {
+            this.moveUp()
         }
         if (key === 57) {
-            // if (willCollide(this.xPos, this.yPos - gridSize) === false && this.yPos > tileCenter) {
-                this.moveUpRight()
+            // if (isCollision(this.xPos, this.yPos - gridSize) === false && this.yPos > tileCenter) {
+            this.moveUpRight()
         }
         if (key === 54) {
-            // if (willCollide(this.xPos + gridSize, this.yPos) === false && this.xPos < game.width - tileCenter) {                        
-                this.moveRight()
+            // if (isCollision(this.xPos + gridSize, this.yPos) === false && this.xPos < game.width - tileCenter) {                        
+            this.moveRight()
         }
         if (key === 51) {
-            // if (willCollide(this.xPos, this.yPos - gridSize) === false && this.yPos > tileCenter) {
-                this.moveDownRight()
+            // if (isCollision(this.xPos, this.yPos - gridSize) === false && this.yPos > tileCenter) {
+            this.moveDownRight()
         }
         if (key === 50) {
-            // if (willCollide(this.xPos, this.yPos +gridSize) === false && this.yPos < game.height - tileCenter) {
-                this.moveDown()
+            // if (isCollision(this.xPos, this.yPos +gridSize) === false && this.yPos < game.height - tileCenter) {
+            this.moveDown()
         }
         if (key === 49) {
-            // if (willCollide(this.xPos, this.yPos - gridSize) === false && this.yPos > tileCenter) {
-                this.moveDownLeft()
+            // if (isCollision(this.xPos, this.yPos - gridSize) === false && this.yPos > tileCenter) {
+            this.moveDownLeft()
         }
         if (key === 52) {
-            // if (willCollide(this.xPos - gridSize, this.yPos) === false && this.xPos > tileCenter) {
-                this.moveLeft()
+            this.moveLeft()
         }
         if (key === 55) {
-            // if (willCollide(this.xPos, this.yPos - gridSize) === false && this.yPos > tileCenter) {
-                this.moveUpLeft()
+            // if (isCollision(this.xPos, this.yPos - gridSize) === false && this.yPos > tileCenter) {
+            this.moveUpLeft()
         }
         endTurn()
     }
 }
 
 class EnemyCharacter extends MobileObject {
-    constructor(uid, occupiedTileArrayPos, gridPos) {
-        super(uid, occupiedTileArrayPos, gridPos)
+    constructor(uid, actorListArrayPos, gridPos, characterType) {
+        super(uid, actorListArrayPos, gridPos, characterType)
         this.uid = uid
-        this.displayColor = 'hotPink'
-        this.type = 'ENEMY'
+        this.characterType = 'ENEMY'
+        this.enemyType = 'PC'
     }
-    render = function () {
+    render = function (displayColor) {
         ctx.font = '24px sans-serif'
         // ctx.textBaseLine = 'middle'
         ctx.textAlign = 'center'
-        ctx.fillStyle = this.displayColor
-        ctx.fillText(`${this.occupiedTileArrayPos}`, this.xPos, this.yPos + 8)
+        ctx.fillStyle = displayColor
+        ctx.fillText(`${this.actorListArrayPos}`, this.xPos, this.yPos + 8)
         }
     // attackHandler = function() {
     //     //we're just going with melee and baseAttack for now
 
     // }
     movementHandler = function() {
-        const pcX = playerCharacter.xPos
-        const pcY = playerCharacter.yPos
+        const pcX = actorList[0].xPos
+        const pcY = actorList[0].yPos
         const x = this.xPos
         const y = this.yPos
         if (Math.abs(pcY - y) === Math.abs(pcX - x)) {
@@ -318,41 +379,45 @@ class EnemyCharacter extends MobileObject {
             }
         }
     }
-    decisionHandler = function() {
-        console.log(`x distance to pc ${Math.abs(this.xPos - playerCharacter.xPos)}, y distance to pc ${Math.abs(this.yPos - playerCharacter.yPos)}`)
-        //if the distance between the pc in both directions === 1
-        if (Math.abs(this.xPos - playerCharacter.xPos) <= gridSize && Math.abs(this.yPos - playerCharacter.yPos) <= gridSize) {
-            console.log(`ATTACK!`)
-            //attack the enemy
-            playerCharacter.baseHealth = this.meleeAttack(playerCharacter)
-        } else {
-            //else move towards the pc
-            this.movementHandler()
-        }
-        console.log(playerCharacter.baseHealth)
-    }
+    // decisionHandler = function() {
+    //     // console.log(`x distance to pc ${Math.abs(this.xPos - playerCharacter.xPos)}, y distance to pc ${Math.abs(this.yPos - playerCharacter.yPos)}`)
+    //     //if the distance between the pc in both directions === 1
+    //     if (Math.abs(this.xPos - playerCharacter.xPos) <= gridSize && Math.abs(this.yPos - playerCharacter.yPos) <= gridSize) {
+    //         console.log(`ATTACK!`)
+    //         //attack the enemy
+    //         playerCharacter.baseHealth = this.meleeAttack(playerCharacter)
+    //     } else {
+    //         //else move towards the pc
+    //         this.movementHandler()
+    //     }
+    // }
 }
 
 // create a player character instance and render it on the map with its initial traits
 
+// const actorListList[0] = new PlayerCharacter(`pc0`, 0, pcSpawn())
+// actorListList[0].render()
 const playerCharacter = new PlayerCharacter(`pc0`, 0, pcSpawnCoordinates())
 playerCharacter.render()
-spawnEnemies(5)
+actorList.push(playerCharacter)
+enemySpawn(5)
 
 // call this function when the player either moves, attacks or uses a skill, drinks a potion, or picks up loot
 
 const endTurn = () => {
     ctx.clearRect(0, 0, game.width, game.height)
     mapDraw()
-    occupiedTiles.splice(playerCharacter.occupiedTileArrayPos, 1,[playerCharacter.xPos, playerCharacter.yPos])
+    actorList.splice(0, 1, playerCharacter)
     playerCharacter.render()
-    console.log(playerCharacter.baseHealth)
-    enemies.forEach(enemy => {
-        enemy.decisionHandler()
-        occupiedTiles.splice(enemy.occupiedTileArrayPos, 1,[enemy.xPos, enemy.yPos])
-        enemy.render()
-    })
-    console.log(occupiedTiles)
+    // console.log(actorList[0].baseHealth)
+    for (i = 1; i < actorList.length; i++) {
+        let enemy = actorList[i]
+        enemy.actorListArrayPos = i
+        enemy.movementHandler()
+        actorList.splice(enemy.actorListArrayPos, 1, enemy)
+        enemy.render('hotPink')
+    }
+    console.log(actorList)
     turn++
     console.log(turn)
 }
@@ -376,9 +441,9 @@ document.addEventListener('keypress', (e) => {
 // *) enemy collision - stop from colliding with other enemies && pc 
 // *) Instead of clearing out entire array, somehow log occupiedTiles index of MOB, then use splice() to change the x/y positions / success!
 // ?) enemy keep moving around towrds pc even if collision detected
-// ?) figure out how to deal damage to specific enemy being tergetted
+// ?) figure out how to deal damage to specific enemy being targetted <<<-----
 
-// ?) refactor spawn code - take in param such that if(param) executes its own while loop, since the rest is basically the same
+// ?) refactorList spawn code - take in param such that if(param) executes its own while loop, since the rest is basically the same
 // create UI
 // **************************************
 
