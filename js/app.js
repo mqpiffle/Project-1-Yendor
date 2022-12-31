@@ -1,8 +1,14 @@
+// *********** GLOBAL STUFF ***********
+
 const game = document.getElementById('canvas')
 const movement = document.getElementById('movement')
 const message = document.getElementById('message')
 
 const ctx = game.getContext('2d')
+
+
+
+
 
 game.setAttribute('width', getComputedStyle(game)['width'])
 game.setAttribute('height', getComputedStyle(game)['height'])
@@ -11,10 +17,159 @@ game.height = 900
 const gridSize = 30
 const tileCenter = gridSize / 2
 // actorListList is a list of all mobile objects currently in play
-// the actorListList[0] will always be at position [0]
+// the playerCharacter will always be at position [0]
 const actorList = []
 
 let turn = 0
+
+// *********** UI STUFF ***********
+// we'll need this a lot, like a lot a lot
+const body = document.getElementById('body')
+
+// *** start splash screen
+const characterSelectionScreen = () => {
+    const charactersSelectionContainerDiv = document.createElement('div')
+    charactersSelectionContainerDiv.id = 'characters-selection-container'
+    charactersSelectionContainerDiv.className = 'UI-base-container'
+    const charactersSelectionTitleDiv = document.createElement('div')
+    charactersSelectionTitleDiv.id = 'characters-selection-title-container'
+    charactersSelectionTitleDiv.className = 'UI-base-Container'
+    const title = document.createElement('h1')
+    // *** insert character name form here
+    const charactersButtonDiv = document.createElement('div')
+    // this should probably be a selection form
+    charactersButtonDiv.id = 'characters-button-container'
+    charactersButtonDiv.className = 'UI-base-Container'
+    const warriorButton = document.createElement('button')
+    warriorButton.id = 'warrior-select-button'
+    warriorButton.className = 'UI-character-select-button'
+    const hunterButton = document.createElement('button')
+    hunterButton.id = 'hunter-select-button'
+    hunterButton.className = 'UI-character-select-button'
+    const wizardButton = document.createElement('button')
+    wizardButton.id = 'wizard-select-button'
+    wizardButton.className = 'UI-character-select-button'
+    const buttonNavDiv = document.createElement('div')
+    buttonNavDiv.id = 'instructions-button-nav-container'
+    buttonNavDiv.class = 'UI-base-container'
+    const enterDungeonButton = document.createElement('button')
+    enterDungeonButton.id = 'enter-dungeon-button'
+    enterDungeonButton.className = 'button'
+
+    body.innerHTML = ''
+    body.appendChild(charactersSelectionContainerDiv)
+    characterSelectionScreen.appendChild(charactersSelectionTitleDiv)
+    charactersSelectionTitleDiv.appendChild(title)
+    characterSelectionScreen.appendChild(charactersButtonDiv)
+    charactersButtonDiv.appendChild(warriorButton)
+    charactersButtonDiv.appendChild(hunterButton)
+    charactersButtonDiv.appendChild(wizardButton)
+    characterSelectionScreen.appendChild(buttonNavDiv)
+    buttonNavDiv.appendChild(enterDungeonButton)
+}
+const instructionsScreen = () => {
+    const instructionsContainerDiv = document.createElement('div')
+    instructionsContainerDiv.id = 'instructions-container'
+    instructionsContainerDiv.className = 'UI-base-container'
+    const instructionsTitleDiv = document.createElement('div')
+    instructionsTitleDiv.id = 'instructions-title-container'
+    instructionsTitleDiv.className = 'UI-base-Container'
+    const title = document.createElement('h1')
+    const instructionsTextDiv = document.createElement('div')
+    instructionsTextDiv.id = 'instructions-text-container'
+    instructionsTextDiv.className = 'UI-base-Container'
+    const instructionsText = document.createElement('p')
+    instructionsText.id = 'instructions-text'
+    instructionsText.className = 'UI-text'
+    const buttonNavDiv = document.createElement('div')
+    buttonNavDiv.id = 'instructions-button-nav-container'
+    buttonNavDiv.class = 'UI-base-container'
+    const backButton = document.createElement('button')
+    backButton.id = 'instructions-back-button'
+    backButton.className = 'button'
+
+    body.innerHTML = ''
+    body.appendChild(aboutContainerDiv)
+    aboutContainerDiv.appendChild(aboutTitleDiv)
+    aboutTitleDiv.appendChild(title)
+    aboutContainerDiv.appendChild(aboutTextDiv)
+    aboutTextDiv.appendChild(aboutText)
+    aboutContainerDiv.appendChild(buttonNavDiv)
+    buttonNavDiv.appendChild(backButton)
+}
+const aboutScreen = () => {
+    const aboutContainerDiv = document.createElement('div')
+    aboutContainerDiv.id = 'about-container'
+    aboutContainerDiv.className = 'UI-base-container'
+    const aboutTitleDiv = document.createElement('div')
+    aboutTitleDiv.id = 'about-title-container'
+    aboutTitleDiv.className = 'UI-base-Container'
+    const title = document.createElement('h1')
+    const aboutTextDiv = document.createElement('div')
+    aboutTextDiv.id = 'about-text-container'
+    aboutTextDiv.className = 'UI-base-Container'
+    const aboutText = document.createElement('p')
+    aboutText.id = 'about-text'
+    aboutText.className = 'UI-text'
+    const buttonNavDiv = document.createElement('div')
+    buttonNavDiv.id = 'instructions-button-nav-container'
+    buttonNavDiv.class = 'UI-base-container'
+    const backButton = document.createElement('button')
+    backButton.id = 'instructions-back-button'
+    backButton.className = 'button'
+
+    body.innerHTML = ''
+    body.appendChild(aboutContainerDiv)
+    aboutContainerDiv.appendChild(aboutTitleDiv)
+    aboutTitleDiv.appendChild(title)
+    aboutContainerDiv.appendChild(aboutTextDiv)
+    aboutTextDiv.appendChild(aboutText)
+    aboutContainerDiv.appendChild(buttonNavDiv)
+    buttonNavDiv.appendChild(backButton)
+}
+
+const splashScreen = () => {
+    const startSplashDiv = document.createElement('div')
+    startSplashDiv.id = 'start-splash'
+    startSplashDiv.class = 'UI-base-container'
+    const mainTitleDiv = document.createElement('div')
+    mainTitleDiv.id = 'main-title-container'
+    mainTitleDiv.className = 'UI-base-container'
+    const title = document.createElement('h1')
+    const buttonNavDiv = document.createElement('div')
+    buttonNavDiv.id = 'splash-button-nav-container'
+    buttonNavDiv.class = 'UI-base-container'
+    const instructionsButton = document.createElement('button')
+    instructionsButton.id = 'instructions-button'
+    instructionsButton.className = 'button'
+    const aboutButton = document.createElement('button')
+    aboutButton.id = 'about-button'
+    aboutButton.className = 'button'
+    const startGameButton = document.createElement('button')
+    startGameButton.id = 'start-game-button'
+    startGameButton.className = 'button'
+
+    body.innerHTML = ''
+    body.appendChild(startSplashDiv)
+    startSplashDiv.appendChild(mainTitleDiv)
+    mainTitleDiv.appendChild(title)
+    startSplashDiv.appendChild(buttonNavDiv)
+    buttonNavDiv.appendChild(instructionsButton)
+    buttonNavDiv.appendChild(aboutButton)
+    buttonNavDiv.appendChild(startGameButton)
+    
+    instructionsButton.addEventListener('click', instructionsScreen)
+    aboutButton.addEventListener('click', aboutScreen)
+    startGameButton.addEventListener('click', characterSelectionScreen)
+}
+
+document.addEventListener('DOMContentLoaded', splashScreen)
+
+
+
+
+
+// *********** GAME LOOP STUFF ***********
 
 // presentational map board for development
 
@@ -165,6 +320,9 @@ class MobileObject {
         console.log(`${this.uid} deals ${incomingDamage} to ${target.uid}`)
         return defenderHealth
     }
+
+    // ***I feel like these can be refactored into one 'move' function, maybe later***
+
     moveUp = function() {
         const targetAt = actorAt(this.xPos, this.yPos - gridSize)
         if (!isCollision(this.xPos, this.yPos - gridSize) && this.yPos > tileCenter) {
@@ -379,18 +537,18 @@ class EnemyCharacter extends MobileObject {
             }
         }
     }
-    // decisionHandler = function() {
-    //     // console.log(`x distance to pc ${Math.abs(this.xPos - playerCharacter.xPos)}, y distance to pc ${Math.abs(this.yPos - playerCharacter.yPos)}`)
-    //     //if the distance between the pc in both directions === 1
-    //     if (Math.abs(this.xPos - playerCharacter.xPos) <= gridSize && Math.abs(this.yPos - playerCharacter.yPos) <= gridSize) {
-    //         console.log(`ATTACK!`)
-    //         //attack the enemy
-    //         playerCharacter.baseHealth = this.meleeAttack(playerCharacter)
-    //     } else {
-    //         //else move towards the pc
-    //         this.movementHandler()
-    //     }
-    // }
+    decisionHandler = function() {
+        // console.log(`x distance to pc ${Math.abs(this.xPos - playerCharacter.xPos)}, y distance to pc ${Math.abs(this.yPos - playerCharacter.yPos)}`)
+        //if the distance between the pc in both directions === 1
+        if (Math.abs(this.xPos - playerCharacter.xPos) <= gridSize && Math.abs(this.yPos - playerCharacter.yPos) <= gridSize) {
+            console.log(`ATTACK!`)
+            //attack the enemy
+            playerCharacter.baseHealth = this.meleeAttack(playerCharacter)
+        } else {
+            //else move towards the pc
+            this.movementHandler()
+        }
+    }
 }
 
 // create a player character instance and render it on the map with its initial traits
@@ -413,7 +571,7 @@ const endTurn = () => {
     for (i = 1; i < actorList.length; i++) {
         let enemy = actorList[i]
         enemy.actorListArrayPos = i
-        enemy.movementHandler()
+        enemy.decisionHandler()
         actorList.splice(enemy.actorListArrayPos, 1, enemy)
         enemy.render('hotPink')
     }
@@ -441,7 +599,11 @@ document.addEventListener('keypress', (e) => {
 // *) enemy collision - stop from colliding with other enemies && pc 
 // *) Instead of clearing out entire array, somehow log occupiedTiles index of MOB, then use splice() to change the x/y positions / success!
 // ?) enemy keep moving around towrds pc even if collision detected
-// ?) figure out how to deal damage to specific enemy being targetted <<<-----
+// *) figure out how to deal damage to specific enemy being targetted <<<-----
+// 1) enemy needs to attack @ 1 range
+// *) start filling out the ui
+// 2) style the UI elements
+// 3) give the charcter a weapon. have the enemies drop weapons on defeat
 
 // ?) refactorList spawn code - take in param such that if(param) executes its own while loop, since the rest is basically the same
 // create UI
