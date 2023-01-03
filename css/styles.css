@@ -1,3 +1,7 @@
+/* *********** FONTS *********** */
+@import url('https://fonts.googleapis.com/css2?family=Pirata+One&family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap');
+/* *********** General Styles *********** */
+
 *,
 *:before,
 *:after {
@@ -5,14 +9,15 @@
 }
 
 :root {
-    --primary-clr: hsl(270 100% 20%);
-    --primary-clr-dk: hsl(270 100% 10%);
+    --primary-clr: hsl(270, 100%, 20%);
+    --primary-clr-dk: #1a0033;
     --primary-clr-lt: hsl(270 100% 30%);
     --neutral-90: hsl(0 0% 90%);
     --neutral-10: hsl(0 0% 10%);
 }
 
 body {
+    font-family: 'Poppins', sans-serif;
     font-size: 16px;
     width: 100vw;
     background-color: hsl(0 0% 10%);
@@ -40,7 +45,7 @@ canvas {
             hsl(0 0% 0% / .1), 
             hsl(0 0% 0% / .75)
         ),
-        url(../images/1018.png);
+        /* url(../images/1018.png); */
 }
 
 .UI-title-container {
@@ -52,8 +57,9 @@ canvas {
 }
 
 h1 {
+    font-family: 'Pirata One', cursive;
     font-size: 3rem;
-    color: hsl(270 100% 20%);
+    color: var(--primary-clr-dk);
     text-shadow: 1px 1px 5px hsl(0 100% 100% / .25);
 }
 
@@ -66,7 +72,51 @@ h1 {
     padding-block: 2rem;
 }
 
+#char-name-label {
+    color: var(--neutral-90);
+}
+
+#char-name {
+    font-family: 'Pirata One';
+    font-size: 2rem;
+    padding: .5rem 1rem;
+}
+
+#char-name:focus {
+    outline: 3px solid var(--primary-clr-lt);
+}
+
+#characters-button-container {
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-columns: repeat(auto-fit, 1fr);
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    padding: 1rem 2rem;
+}
+
+.UI-character-select-button {
+    width: 128px;
+    height: 128px;
+    background: radial-gradient(hsl(218 100% 50%),hsl(218 100% 70%));
+    border: none;
+    border-radius: .5rem;
+    cursor: pointer;
+    box-shadow: 1px 1px 5px hsl(0 0% 0% / 0);
+    /* transition: all 300ms ease; */
+}
+/* 
+.UI-character-select-button:hover {
+    box-shadow: 1px 1px 9px hsl(0 100% 100% / .5);
+} */
+
+.UI-character-select-button:focus {
+    outline: 3px solid yellow;
+}
+
 .button {
+    font-family: 'Poppins', sans-serif;
     font-size: 1.25rem;
     font-weight: 600;
     padding: .5rem 2rem;

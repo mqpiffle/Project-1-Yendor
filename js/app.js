@@ -22,181 +22,6 @@ const actorList = []
 
 let turn = 0
 
-// *********** UI STUFF ***********
-
-// TODO:
-// 1) add text to Instructions and About
-// 2) add input form(s) to character selction screen (character name and class selector)
-// 2A) start game loop when enter dungeon button clicked
-// 3) choose some better fonts
-
-// we'll need this a lot, like a lot a lot
-const body = document.getElementById('body')
-
-// *** start splash screen
-const characterSelectionScreen = () => {
-    const charactersSelectionContainerDiv = document.createElement('div')
-    charactersSelectionContainerDiv.id = 'characters-selection-container'
-    charactersSelectionContainerDiv.className = 'UI-base-container'
-    const charactersSelectionTitleDiv = document.createElement('div')
-    charactersSelectionTitleDiv.id = 'characters-selection-title-container'
-    charactersSelectionTitleDiv.className = 'UI-title-container'
-    const title = document.createElement('h1')
-    // *** insert character name form here
-    const charactersButtonDiv = document.createElement('div')
-    // this should probably be a selection form
-    charactersButtonDiv.id = 'characters-button-container'
-    charactersButtonDiv.className = 'UI-base-container'
-    const warriorButton = document.createElement('button')
-    warriorButton.id = 'warrior-select-button'
-    warriorButton.className = 'UI-character-select-button'
-    const hunterButton = document.createElement('button')
-    hunterButton.id = 'hunter-select-button'
-    hunterButton.className = 'UI-character-select-button'
-    const wizardButton = document.createElement('button')
-    wizardButton.id = 'wizard-select-button'
-    wizardButton.className = 'UI-character-select-button'
-    const buttonNavDiv = document.createElement('div')
-    buttonNavDiv.id = 'instructions-button-nav-container'
-    buttonNavDiv.className = 'UI-button-nav-container'
-    const enterDungeonButton = document.createElement('button')
-    enterDungeonButton.id = 'enter-dungeon-button'
-    enterDungeonButton.className = 'button'
-    const backButton = document.createElement('button')
-    backButton.id = 'instructions-back-button'
-    backButton.className = 'button'
-
-    body.innerHTML = ''
-    body.appendChild(charactersSelectionContainerDiv)
-    charactersSelectionContainerDiv.appendChild(charactersSelectionTitleDiv)
-    charactersSelectionTitleDiv.appendChild(title)
-    charactersSelectionContainerDiv.appendChild(charactersButtonDiv)
-    charactersButtonDiv.appendChild(warriorButton)
-    charactersButtonDiv.appendChild(hunterButton)
-    charactersButtonDiv.appendChild(wizardButton)
-    charactersSelectionContainerDiv.appendChild(buttonNavDiv)
-    buttonNavDiv.appendChild(enterDungeonButton)
-    buttonNavDiv.appendChild(backButton)
-
-    title.innerText = 'Select Character'
-    enterDungeonButton.innerText = 'Enter Dungeon'
-    backButton.innerText = 'Back'
-
-    backButton.addEventListener('click', splashScreen)
-}
-const instructionsScreen = () => {
-    const instructionsContainerDiv = document.createElement('div')
-    instructionsContainerDiv.id = 'instructions-container'
-    instructionsContainerDiv.className = 'UI-base-container'
-    const instructionsTitleDiv = document.createElement('div')
-    instructionsTitleDiv.id = 'instructions-title-container'
-    instructionsTitleDiv.className = 'UI-title-container'
-    const title = document.createElement('h1')
-    const instructionsTextDiv = document.createElement('div')
-    instructionsTextDiv.id = 'instructions-text-container'
-    instructionsTextDiv.className = 'UI-text-container'
-    const instructionsText = document.createElement('p')
-    instructionsText.id = 'instructions-text'
-    instructionsText.className = 'UI-text'
-    const buttonNavDiv = document.createElement('div')
-    buttonNavDiv.id = 'instructions-button-nav-container'
-    buttonNavDiv.className = 'UI-button-nav-container'
-    const backButton = document.createElement('button')
-    backButton.id = 'instructions-back-button'
-    backButton.className = 'button'
-
-    body.innerHTML = ''
-    body.appendChild(instructionsContainerDiv)
-    instructionsContainerDiv.appendChild(instructionsTitleDiv)
-    instructionsTitleDiv.appendChild(title)
-    instructionsContainerDiv.appendChild(instructionsTextDiv)
-    instructionsTextDiv.appendChild(instructionsText)
-    instructionsContainerDiv.appendChild(buttonNavDiv)
-    buttonNavDiv.appendChild(backButton)
-
-    title.innerText = 'Instructions'
-    backButton.innerText = 'Back'
-
-    backButton.addEventListener('click', splashScreen)
-}
-const aboutScreen = () => {
-    const aboutContainerDiv = document.createElement('div')
-    aboutContainerDiv.id = 'about-container'
-    aboutContainerDiv.className = 'UI-base-container'
-    const aboutTitleDiv = document.createElement('div')
-    aboutTitleDiv.id = 'about-title-container'
-    aboutTitleDiv.className = 'UI-title-container'
-    const title = document.createElement('h1')
-    const aboutTextDiv = document.createElement('div')
-    aboutTextDiv.id = 'about-text-container'
-    aboutTextDiv.className = 'UI-text-container'
-    const aboutText = document.createElement('p')
-    aboutText.id = 'about-text'
-    aboutText.className = 'UI-text'
-    const buttonNavDiv = document.createElement('div')
-    buttonNavDiv.id = 'instructions-button-nav-container'
-    buttonNavDiv.className = 'UI-button-nav-container'
-    const backButton = document.createElement('button')
-    backButton.id = 'instructions-back-button'
-    backButton.className = 'button'
-
-    body.innerHTML = ''
-    body.appendChild(aboutContainerDiv)
-    aboutContainerDiv.appendChild(aboutTitleDiv)
-    aboutTitleDiv.appendChild(title)
-    aboutContainerDiv.appendChild(aboutTextDiv)
-    aboutTextDiv.appendChild(aboutText)
-    aboutContainerDiv.appendChild(buttonNavDiv)
-    buttonNavDiv.appendChild(backButton)
-
-    title.innerText = 'About'
-    backButton.innerText = 'Back'
-
-    backButton.addEventListener('click', splashScreen)
-}
-
-const splashScreen = () => {
-    const startSplashDiv = document.createElement('div')
-    startSplashDiv.id = 'start-splash'
-    startSplashDiv.className = 'UI-base-container'
-    const mainTitleDiv = document.createElement('div')
-    mainTitleDiv.id = 'main-title-container'
-    mainTitleDiv.className = 'UI-title-container'
-    const title = document.createElement('h1')
-    const buttonNavDiv = document.createElement('div')
-    buttonNavDiv.id = 'splash-button-nav-container'
-    buttonNavDiv.className = 'UI-button-nav-container'
-    const instructionsButton = document.createElement('button')
-    instructionsButton.id = 'instructions-button'
-    instructionsButton.className = 'button'
-    const aboutButton = document.createElement('button')
-    aboutButton.id = 'about-button'
-    aboutButton.className = 'button'
-    const startGameButton = document.createElement('button')
-    startGameButton.id = 'start-game-button'
-    startGameButton.className = 'button'
-
-    body.innerHTML = ''
-    body.appendChild(startSplashDiv)
-    startSplashDiv.appendChild(mainTitleDiv)
-    mainTitleDiv.appendChild(title)
-    startSplashDiv.appendChild(buttonNavDiv)
-    buttonNavDiv.appendChild(instructionsButton)
-    buttonNavDiv.appendChild(aboutButton)
-    buttonNavDiv.appendChild(startGameButton)
-
-    title.innerText = 'The Bauble of Yendor'
-    instructionsButton.innerText = 'Instructions'
-    aboutButton.innerText = 'About'
-    startGameButton.innerText = 'Start Game'
-
-    
-    instructionsButton.addEventListener('click', instructionsScreen)
-    aboutButton.addEventListener('click', aboutScreen)
-    startGameButton.addEventListener('click', characterSelectionScreen)
-}
-
-document.addEventListener('DOMContentLoaded', splashScreen)
 
 
 
@@ -619,6 +444,219 @@ document.addEventListener('keypress', (e) => {
     playerCharacter.movementHandler(e.keyCode)
 })
 
+// *********** UI STUFF ***********
+
+// TODO:
+// 1) add text to Instructions and About
+// 2) add input form(s) to character selction screen (character name and class selector)
+// 2A) start game loop when enter dungeon button clicked
+// 3) choose some better fonts
+
+// we'll need this a lot, like a lot a lot
+const body = document.getElementById('body')
+
+const initializeGame = () => {
+
+}
+
+const characterSelectionScreen = () => {
+    const charactersSelectionContainerDiv = document.createElement('div')
+    charactersSelectionContainerDiv.id = 'characters-selection-container'
+    charactersSelectionContainerDiv.className = 'UI-base-container'
+    const charactersSelectionTitleDiv = document.createElement('div')
+    charactersSelectionTitleDiv.id = 'characters-selection-title-container'
+    charactersSelectionTitleDiv.className = 'UI-title-container'
+    const title = document.createElement('h1')
+    // *** insert character name form here
+    const charactersForm = document.createElement('form')
+    // this should probably be a selection form
+    charactersForm.id = 'characters-form-container'
+    charactersForm.className = 'UI-button-nav-container'
+    const charactersFormInputLabel = document.createElement('label')
+    charactersFormInputLabel.for = 'char-name'
+    charactersFormInputLabel.id = 'char-name-label'
+    const charactersFormInput = document.createElement('input')
+    charactersFormInput.id = 'char-name'
+    charactersFormInput.type = 'text'
+    charactersFormInput.name = 'char-name'
+    const charactersSelectionButtonContainer = document.createElement('div')
+    charactersSelectionButtonContainer.id  = 'characters-button-container'
+    const warriorButton = document.createElement('button')
+    warriorButton.id = 'warrior-select-button'
+    warriorButton.className = 'UI-character-select-button'
+    const warriorImage = document.createElement('img')
+    const huntressButton = document.createElement('button')
+    huntressButton.id = 'huntress-select-button'
+    huntressButton.className = 'UI-character-select-button'
+    const huntressImage = document.createElement('img')
+    const wizardButton = document.createElement('button')
+    wizardButton.id = 'wizard-select-button'
+    wizardButton.className = 'UI-character-select-button'
+    const wizardImage = document.createElement('img')
+    const buttonNavDiv = document.createElement('div')
+    buttonNavDiv.id = 'characters-select-button-nav-container'
+    buttonNavDiv.className = 'UI-button-nav-container'
+    const enterDungeonButton = document.createElement('button')
+    enterDungeonButton.id = 'enter-dungeon-button'
+    enterDungeonButton.className = 'button'
+    const backButton = document.createElement('button')
+    backButton.id = 'characters-select-back-button'
+    backButton.className = 'button'
+
+    title.innerText = 'Select Character'
+    enterDungeonButton.innerText = 'Enter Dungeon'
+    backButton.innerText = 'Back'
+    wizardImage.src = '../images/BoY_wizard_1.png'
+    warriorImage.src = '../images/BoY_warrior_1.png'
+    huntressImage.src = '../images/BoY_huntress_1.png'
+    wizardButton.value = 'wizard'
+    warriorButton.value = 'warrior'
+    huntressButton.value = 'huntress'
+    wizardButton.type = 'button'
+    warriorButton.type = 'button'
+    huntressButton.type = 'button'
+    charactersFormInputLabel.innerText = 'Character Name'
+
+    body.innerHTML = ''
+    body.appendChild(charactersSelectionContainerDiv)
+    charactersSelectionContainerDiv.appendChild(charactersSelectionTitleDiv)
+    charactersSelectionTitleDiv.appendChild(title)
+    charactersSelectionContainerDiv.appendChild(charactersForm)
+    // charactersSelectionContainerDiv.appendChild(charactersFormInputLabel)
+    // charactersSelectionContainerDiv.appendChild(charactersFormInput)
+    charactersForm.appendChild(charactersFormInputLabel)
+    charactersForm.appendChild(charactersFormInput)
+    charactersForm.appendChild(charactersSelectionButtonContainer)
+    charactersSelectionButtonContainer.appendChild(warriorButton)
+    charactersSelectionButtonContainer.appendChild(huntressButton)
+    charactersSelectionButtonContainer.appendChild(wizardButton)
+    wizardButton.appendChild(wizardImage)
+    warriorButton.appendChild(warriorImage)
+    huntressButton.appendChild(huntressImage)
+
+    charactersSelectionContainerDiv.appendChild(buttonNavDiv)
+    buttonNavDiv.appendChild(enterDungeonButton)
+    buttonNavDiv.appendChild(backButton)
+
+    enterDungeonButton.addEventListener('click', initializeGame)
+    backButton.addEventListener('click', splashScreen)
+}
+
+const instructionsScreen = () => {
+    const instructionsContainerDiv = document.createElement('div')
+    instructionsContainerDiv.id = 'instructions-container'
+    instructionsContainerDiv.className = 'UI-base-container'
+    const instructionsTitleDiv = document.createElement('div')
+    instructionsTitleDiv.id = 'instructions-title-container'
+    instructionsTitleDiv.className = 'UI-title-container'
+    const title = document.createElement('h1')
+    const instructionsTextDiv = document.createElement('div')
+    instructionsTextDiv.id = 'instructions-text-container'
+    instructionsTextDiv.className = 'UI-text-container'
+    const instructionsText = document.createElement('p')
+    instructionsText.id = 'instructions-text'
+    instructionsText.className = 'UI-text'
+    const buttonNavDiv = document.createElement('div')
+    buttonNavDiv.id = 'instructions-button-nav-container'
+    buttonNavDiv.className = 'UI-button-nav-container'
+    const backButton = document.createElement('button')
+    backButton.id = 'instructions-back-button'
+    backButton.className = 'button'
+
+    title.innerText = 'Instructions'
+    backButton.innerText = 'Back'
+
+    body.innerHTML = ''
+    body.appendChild(instructionsContainerDiv)
+    instructionsContainerDiv.appendChild(instructionsTitleDiv)
+    instructionsTitleDiv.appendChild(title)
+    instructionsContainerDiv.appendChild(instructionsTextDiv)
+    instructionsTextDiv.appendChild(instructionsText)
+    instructionsContainerDiv.appendChild(buttonNavDiv)
+    buttonNavDiv.appendChild(backButton)
+
+    backButton.addEventListener('click', splashScreen)
+}
+
+const aboutScreen = () => {
+    const aboutContainerDiv = document.createElement('div')
+    aboutContainerDiv.id = 'about-container'
+    aboutContainerDiv.className = 'UI-base-container'
+    const aboutTitleDiv = document.createElement('div')
+    aboutTitleDiv.id = 'about-title-container'
+    aboutTitleDiv.className = 'UI-title-container'
+    const title = document.createElement('h1')
+    const aboutTextDiv = document.createElement('div')
+    aboutTextDiv.id = 'about-text-container'
+    aboutTextDiv.className = 'UI-text-container'
+    const aboutText = document.createElement('p')
+    aboutText.id = 'about-text'
+    aboutText.className = 'UI-text'
+    const buttonNavDiv = document.createElement('div')
+    buttonNavDiv.id = 'instructions-button-nav-container'
+    buttonNavDiv.className = 'UI-button-nav-container'
+    const backButton = document.createElement('button')
+    backButton.id = 'instructions-back-button'
+    backButton.className = 'button'
+
+    title.innerText = 'About'
+    backButton.innerText = 'Back'
+
+    body.innerHTML = ''
+    body.appendChild(aboutContainerDiv)
+    aboutContainerDiv.appendChild(aboutTitleDiv)
+    aboutTitleDiv.appendChild(title)
+    aboutContainerDiv.appendChild(aboutTextDiv)
+    aboutTextDiv.appendChild(aboutText)
+    aboutContainerDiv.appendChild(buttonNavDiv)
+    buttonNavDiv.appendChild(backButton)
+
+    backButton.addEventListener('click', splashScreen)
+}
+
+const splashScreen = () => {
+    const startSplashDiv = document.createElement('div')
+    startSplashDiv.id = 'start-splash'
+    startSplashDiv.className = 'UI-base-container'
+    const mainTitleDiv = document.createElement('div')
+    mainTitleDiv.id = 'main-title-container'
+    mainTitleDiv.className = 'UI-title-container'
+    const title = document.createElement('h1')
+    const buttonNavDiv = document.createElement('div')
+    buttonNavDiv.id = 'splash-button-nav-container'
+    buttonNavDiv.className = 'UI-button-nav-container'
+    const instructionsButton = document.createElement('button')
+    instructionsButton.id = 'instructions-button'
+    instructionsButton.className = 'button'
+    const aboutButton = document.createElement('button')
+    aboutButton.id = 'about-button'
+    aboutButton.className = 'button'
+    const startGameButton = document.createElement('button')
+    startGameButton.id = 'start-game-button'
+    startGameButton.className = 'button'
+
+    title.innerText = 'The Dungeon of Yendor'
+    instructionsButton.innerText = 'Instructions'
+    aboutButton.innerText = 'About'
+    startGameButton.innerText = 'Start Game'
+
+    body.innerHTML = ''
+    body.appendChild(startSplashDiv)
+    startSplashDiv.appendChild(mainTitleDiv)
+    mainTitleDiv.appendChild(title)
+    startSplashDiv.appendChild(buttonNavDiv)
+    buttonNavDiv.appendChild(instructionsButton)
+    buttonNavDiv.appendChild(aboutButton)
+    buttonNavDiv.appendChild(startGameButton)
+    
+    instructionsButton.addEventListener('click', instructionsScreen)
+    aboutButton.addEventListener('click', aboutScreen)
+    startGameButton.addEventListener('click', characterSelectionScreen)
+}
+
+document.addEventListener('DOMContentLoaded', splashScreen)
+
+
 // **********NEXT STEPS***************
 // *) spawn pc within three tiles of an edge
 // *) spawn an enemy in a random location at least 5 tiles away from the pc
@@ -637,6 +675,7 @@ document.addEventListener('keypress', (e) => {
 // *) start filling out the ui
 // 2) style the UI elements
 // 3) give the charcter a weapon. have the enemies drop weapons on defeat
+// 4) refactor the friggin move functions - should be able to do it with ONE function
 
 // ?) refactorList spawn code - take in param such that if(param) executes its own while loop, since the rest is basically the same
 // create UI
