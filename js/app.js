@@ -23,6 +23,13 @@ const actorList = []
 let turn = 0
 
 // *********** UI STUFF ***********
+
+// TODO:
+// 1) add text to Instructions and About
+// 2) add input form(s) to character selction screen (character name and class selector)
+// 2A) start game loop when enter dungeon button clicked
+// 3) choose some better fonts
+
 // we'll need this a lot, like a lot a lot
 const body = document.getElementById('body')
 
@@ -74,6 +81,8 @@ const characterSelectionScreen = () => {
     title.innerText = 'Select Character'
     enterDungeonButton.innerText = 'Enter Dungeon'
     backButton.innerText = 'Back'
+
+    backButton.addEventListener('click', splashScreen)
 }
 const instructionsScreen = () => {
     const instructionsContainerDiv = document.createElement('div')
@@ -107,6 +116,8 @@ const instructionsScreen = () => {
 
     title.innerText = 'Instructions'
     backButton.innerText = 'Back'
+
+    backButton.addEventListener('click', splashScreen)
 }
 const aboutScreen = () => {
     const aboutContainerDiv = document.createElement('div')
@@ -140,6 +151,8 @@ const aboutScreen = () => {
 
     title.innerText = 'About'
     backButton.innerText = 'Back'
+
+    backButton.addEventListener('click', splashScreen)
 }
 
 const splashScreen = () => {
