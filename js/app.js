@@ -33,13 +33,13 @@ const characterSelectionScreen = () => {
     charactersSelectionContainerDiv.className = 'UI-base-container'
     const charactersSelectionTitleDiv = document.createElement('div')
     charactersSelectionTitleDiv.id = 'characters-selection-title-container'
-    charactersSelectionTitleDiv.className = 'UI-base-Container'
+    charactersSelectionTitleDiv.className = 'UI-title-container'
     const title = document.createElement('h1')
     // *** insert character name form here
     const charactersButtonDiv = document.createElement('div')
     // this should probably be a selection form
     charactersButtonDiv.id = 'characters-button-container'
-    charactersButtonDiv.className = 'UI-base-Container'
+    charactersButtonDiv.className = 'UI-base-container'
     const warriorButton = document.createElement('button')
     warriorButton.id = 'warrior-select-button'
     warriorButton.className = 'UI-character-select-button'
@@ -51,21 +51,29 @@ const characterSelectionScreen = () => {
     wizardButton.className = 'UI-character-select-button'
     const buttonNavDiv = document.createElement('div')
     buttonNavDiv.id = 'instructions-button-nav-container'
-    buttonNavDiv.class = 'UI-base-container'
+    buttonNavDiv.className = 'UI-button-nav-container'
     const enterDungeonButton = document.createElement('button')
     enterDungeonButton.id = 'enter-dungeon-button'
     enterDungeonButton.className = 'button'
+    const backButton = document.createElement('button')
+    backButton.id = 'instructions-back-button'
+    backButton.className = 'button'
 
     body.innerHTML = ''
     body.appendChild(charactersSelectionContainerDiv)
-    characterSelectionScreen.appendChild(charactersSelectionTitleDiv)
+    charactersSelectionContainerDiv.appendChild(charactersSelectionTitleDiv)
     charactersSelectionTitleDiv.appendChild(title)
-    characterSelectionScreen.appendChild(charactersButtonDiv)
+    charactersSelectionContainerDiv.appendChild(charactersButtonDiv)
     charactersButtonDiv.appendChild(warriorButton)
     charactersButtonDiv.appendChild(hunterButton)
     charactersButtonDiv.appendChild(wizardButton)
-    characterSelectionScreen.appendChild(buttonNavDiv)
+    charactersSelectionContainerDiv.appendChild(buttonNavDiv)
     buttonNavDiv.appendChild(enterDungeonButton)
+    buttonNavDiv.appendChild(backButton)
+
+    title.innerText = 'Select Character'
+    enterDungeonButton.innerText = 'Enter Dungeon'
+    backButton.innerText = 'Back'
 }
 const instructionsScreen = () => {
     const instructionsContainerDiv = document.createElement('div')
@@ -73,29 +81,32 @@ const instructionsScreen = () => {
     instructionsContainerDiv.className = 'UI-base-container'
     const instructionsTitleDiv = document.createElement('div')
     instructionsTitleDiv.id = 'instructions-title-container'
-    instructionsTitleDiv.className = 'UI-base-Container'
+    instructionsTitleDiv.className = 'UI-title-container'
     const title = document.createElement('h1')
     const instructionsTextDiv = document.createElement('div')
     instructionsTextDiv.id = 'instructions-text-container'
-    instructionsTextDiv.className = 'UI-base-Container'
+    instructionsTextDiv.className = 'UI-text-container'
     const instructionsText = document.createElement('p')
     instructionsText.id = 'instructions-text'
     instructionsText.className = 'UI-text'
     const buttonNavDiv = document.createElement('div')
     buttonNavDiv.id = 'instructions-button-nav-container'
-    buttonNavDiv.class = 'UI-base-container'
+    buttonNavDiv.className = 'UI-button-nav-container'
     const backButton = document.createElement('button')
     backButton.id = 'instructions-back-button'
     backButton.className = 'button'
 
     body.innerHTML = ''
-    body.appendChild(aboutContainerDiv)
-    aboutContainerDiv.appendChild(aboutTitleDiv)
-    aboutTitleDiv.appendChild(title)
-    aboutContainerDiv.appendChild(aboutTextDiv)
-    aboutTextDiv.appendChild(aboutText)
-    aboutContainerDiv.appendChild(buttonNavDiv)
+    body.appendChild(instructionsContainerDiv)
+    instructionsContainerDiv.appendChild(instructionsTitleDiv)
+    instructionsTitleDiv.appendChild(title)
+    instructionsContainerDiv.appendChild(instructionsTextDiv)
+    instructionsTextDiv.appendChild(instructionsText)
+    instructionsContainerDiv.appendChild(buttonNavDiv)
     buttonNavDiv.appendChild(backButton)
+
+    title.innerText = 'Instructions'
+    backButton.innerText = 'Back'
 }
 const aboutScreen = () => {
     const aboutContainerDiv = document.createElement('div')
@@ -103,17 +114,17 @@ const aboutScreen = () => {
     aboutContainerDiv.className = 'UI-base-container'
     const aboutTitleDiv = document.createElement('div')
     aboutTitleDiv.id = 'about-title-container'
-    aboutTitleDiv.className = 'UI-base-Container'
+    aboutTitleDiv.className = 'UI-title-container'
     const title = document.createElement('h1')
     const aboutTextDiv = document.createElement('div')
     aboutTextDiv.id = 'about-text-container'
-    aboutTextDiv.className = 'UI-base-Container'
+    aboutTextDiv.className = 'UI-text-container'
     const aboutText = document.createElement('p')
     aboutText.id = 'about-text'
     aboutText.className = 'UI-text'
     const buttonNavDiv = document.createElement('div')
     buttonNavDiv.id = 'instructions-button-nav-container'
-    buttonNavDiv.class = 'UI-base-container'
+    buttonNavDiv.className = 'UI-button-nav-container'
     const backButton = document.createElement('button')
     backButton.id = 'instructions-back-button'
     backButton.className = 'button'
@@ -126,19 +137,22 @@ const aboutScreen = () => {
     aboutTextDiv.appendChild(aboutText)
     aboutContainerDiv.appendChild(buttonNavDiv)
     buttonNavDiv.appendChild(backButton)
+
+    title.innerText = 'About'
+    backButton.innerText = 'Back'
 }
 
 const splashScreen = () => {
     const startSplashDiv = document.createElement('div')
     startSplashDiv.id = 'start-splash'
-    startSplashDiv.class = 'UI-base-container'
+    startSplashDiv.className = 'UI-base-container'
     const mainTitleDiv = document.createElement('div')
     mainTitleDiv.id = 'main-title-container'
-    mainTitleDiv.className = 'UI-base-container'
+    mainTitleDiv.className = 'UI-title-container'
     const title = document.createElement('h1')
     const buttonNavDiv = document.createElement('div')
     buttonNavDiv.id = 'splash-button-nav-container'
-    buttonNavDiv.class = 'UI-base-container'
+    buttonNavDiv.className = 'UI-button-nav-container'
     const instructionsButton = document.createElement('button')
     instructionsButton.id = 'instructions-button'
     instructionsButton.className = 'button'
@@ -157,6 +171,12 @@ const splashScreen = () => {
     buttonNavDiv.appendChild(instructionsButton)
     buttonNavDiv.appendChild(aboutButton)
     buttonNavDiv.appendChild(startGameButton)
+
+    title.innerText = 'The Bauble of Yendor'
+    instructionsButton.innerText = 'Instructions'
+    aboutButton.innerText = 'About'
+    startGameButton.innerText = 'Start Game'
+
     
     instructionsButton.addEventListener('click', instructionsScreen)
     aboutButton.addEventListener('click', aboutScreen)
