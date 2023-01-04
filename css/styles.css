@@ -23,15 +23,6 @@ body {
     background-color: hsl(0 0% 10%);
 }
 
-#game-container {
-    width: fit-content;
-    margin: 1rem auto;
-}
-
-canvas {
-    border: 11px solid var(--primary-clr);
-}
-
 /* *********** UI Elements *********** */
 
 .UI-base-container {
@@ -82,7 +73,7 @@ h1 {
     padding: .5rem 1rem;
 }
 
-#char-name:focus {
+.selected-class {
     outline: 3px solid var(--primary-clr-lt);
 }
 
@@ -96,11 +87,44 @@ h1 {
     padding: 1rem 2rem;
 }
 
+/* *********** GAME UI *********** */
+
 #game-container {
     width: fit-content;
     margin: 18rem auto;
-    border: 1px solid var(--neutral-90);
+    border: 3px solid var(--neutral-90);
     border-radius: 1rem;
+}
+
+#primary-canvas {
+    border: 7px solid var(--primary-clr);
+}
+
+#game-top-ui, #game-bottom-ui {
+    display: flex;
+    background: radial-gradient(hsl(0 100% 100% / .25), hsl(0 100% 100% / .5));
+    margin-block: 1rem;
+   
+}
+
+#game-top-char-info-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: .5rem 1rem;
+    gap: 1rem;
+}
+
+.UI-game-display-label {
+    font-size: .75rem;
+    margin: 0;
+}
+
+.UI-game-display-text {
+    font-family: 'Pirata One';
+    font-size: 2rem;
+    margin: 0;
+    color: var(--primary-clr-dk);
 }
 
 /* *********** BUTTONS *********** */
