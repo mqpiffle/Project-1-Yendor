@@ -15,6 +15,7 @@ const tileCenter = gridSize / 2
 // actorListList is a list of all mobile objects currently in play
 // the playerCharacter will always be at position [0]
 const actorList = []
+let playerCharacter
 let characterName
 let characterClass
 let turn = 0
@@ -160,6 +161,23 @@ class GameObject {
         this.ctx = this.canvas.getContext('2d')
         this.width = this.canvas.width
         this.height = this.canvas.height
+    }
+
+    checkerboard = (horiz, vert) => {
+        if (horiz % 2 === 0) {
+            return `hsl(0 0% ${30 + (vert % 2) * 2}%`
+        } else {
+            return `hsl(0 0% ${32 - (vert % 2) * 2}%`
+        }
+    }
+
+    mapDraw = () => {
+        for (let i = 0; i < this.width / gridSize; i++) {
+            for (let j = 0; j < this.height / gridSize; j++) {
+                this.ctx.fillStyle = this.checkerboard(i, j)
+                this.ctx.fillRect(i * gridSize, j * gridSize, gridSize, gridSize)
+            }
+        }
     }
 }
 class MobileObject extends GameObject {
@@ -315,6 +333,24 @@ class PlayerCharacter extends MobileObject {
         this.ctx.fill()
     }
 
+    endTurn = () => {
+        this.ctx.clearRect(0, 0, this.width, this.height)
+        this.mapDraw()
+        actorList.splice(0, 1, playerCharacter)
+        actorList[0].render()
+        // console.log(actorList[0].baseHealth)
+        for (let i = 1; i < actorList.length; i++) {
+            let enemy = actorList[i]
+            enemy.actorListArrayPos = i
+            enemy.decisionHandler()
+            actorList.splice(enemy.actorListArrayPos, 1, enemy)
+            enemy.render('hotPink')
+        }
+        console.log(actorList)
+        turn++
+        console.log(turn)
+    }
+
     movementHandler = function(key) {
         // we'll use the numPad for movement and explicitly define the diagonals
         if (key === 56) {
@@ -348,13 +384,13 @@ class PlayerCharacter extends MobileObject {
             // if (isCollision(this.xPos, this.yPos - gridSize) === false && this.yPos > tileCenter) {
             this.moveUpLeft()
         }
-        endTurn()
+        this.endTurn()
     }
 }
 
 class EnemyCharacter extends MobileObject {
-    constructor(uid, actorListArrayPos, gridPos, characterType, canvas, ctx, width, height) {
-        super(uid, actorListArrayPos, gridPos, characterType, canvas, ctx, width, height)
+    constructor(uid, actorListArrayPos, gridPos, characterType, canvas, ctx, width, height, xPos, yPos) {
+        super(uid, actorListArrayPos, gridPos, characterType, canvas, ctx, width, height, xPos, yPos)
         this.uid = uid
         this.characterType = 'ENEMY'
         this.enemyType = 'PC'
@@ -408,10 +444,10 @@ class EnemyCharacter extends MobileObject {
     decisionHandler = function() {
         // console.log(`x distance to pc ${Math.abs(this.xPos - playerCharacter.xPos)}, y distance to pc ${Math.abs(this.yPos - playerCharacter.yPos)}`)
         //if the distance between the pc in both directions === 1
-        if (Math.abs(this.xPos - playerCharacter.xPos) <= gridSize && Math.abs(this.yPos - playerCharacter.yPos) <= gridSize) {
+        if (Math.abs(this.xPos - actorList[0].xPos) <= gridSize && Math.abs(this.yPos - actorList[0].yPos) <= gridSize) {
             console.log(`ATTACK!`)
             //attack the enemy
-            playerCharacter.baseHealth = this.meleeAttack(playerCharacter)
+            actorList[0].baseHealth = this.meleeAttack(actorList[0])
         } else {
             //else move towards the pc
             this.movementHandler()
@@ -424,22 +460,7 @@ class GameWorld extends GameObject {
         super(canvas, ctx)
     }
 
-    checkerboard = (horiz, vert) => {
-        if (horiz % 2 === 0) {
-            return `hsl(0 0% ${30 + (vert % 2) * 2}%`
-        } else {
-            return `hsl(0 0% ${32 - (vert % 2) * 2}%`
-        }
-    }
-
-    mapDraw = () => {
-        for (let i = 0; i < this.width / gridSize; i++) {
-            for (let j = 0; j < this.height / gridSize; j++) {
-                this.ctx.fillStyle = this.checkerboard(i, j)
-                this.ctx.fillRect(i * gridSize, j * gridSize, gridSize, gridSize)
-            }
-        }
-    }
+    
 
     pcSpawnCoordinates = () => {
         //spawn pc within 3 tiles of any edge
@@ -492,6 +513,22 @@ class GameWorld extends GameObject {
                 coordinateTest = true
             }
         }
+        //the re-un-normalized coordinates
+        coordinates = [rndX * gridSize + tileCenter, rndY * gridSize + tileCenter]
+
+        // console.log(`enemy coordinates ${coordinates}`)
+        //add these coords to an array for future testing
+        // console.log(`enemy occupied tiles array: ${occupiedTiles}`)
+        //gimme
+        return coordinates
+    }
+
+    enemySpawn = (numberToSpawn) => {
+        for (let i = 1; i <= numberToSpawn; i++) {
+            let enemy = new EnemyCharacter(`enemy${[i]}`, i, this.enemySpawnCoordinates())
+            actorList.push(enemy)
+            enemy.render('hotPink')
+        }
     }
 }
 
@@ -503,23 +540,23 @@ class GameWorld extends GameObject {
 
 // call this function when the player either moves, attacks or uses a skill, drinks a potion, or picks up loot
 
-const endTurn = () => {
-    ctx.clearRect(0, 0, game.width, game.height)
-    mapDraw()
-    actorList.splice(0, 1, playerCharacter)
-    playerCharacter.render()
-    // console.log(actorList[0].baseHealth)
-    for (i = 1; i < actorList.length; i++) {
-        let enemy = actorList[i]
-        enemy.actorListArrayPos = i
-        enemy.decisionHandler()
-        actorList.splice(enemy.actorListArrayPos, 1, enemy)
-        enemy.render('hotPink')
-    }
-    console.log(actorList)
-    turn++
-    console.log(turn)
-}
+// const endTurn = () => {
+//     ctx.clearRect(0, 0, game.width, game.height)
+//     mapDraw()
+//     actorList.splice(0, 1, playerCharacter)
+//     playerCharacter.render()
+//     // console.log(actorList[0].baseHealth)
+//     for (i = 1; i < actorList.length; i++) {
+//         let enemy = actorList[i]
+//         enemy.actorListArrayPos = i
+//         enemy.decisionHandler()
+//         actorList.splice(enemy.actorListArrayPos, 1, enemy)
+//         enemy.render('hotPink')
+//     }
+//     console.log(actorList)
+//     turn++
+//     console.log(turn)
+// }
 
 
 // since the game is turn-based we can simply use the keypress method and pass that to our movement handler
@@ -538,10 +575,6 @@ document.addEventListener('keypress', (e) => {
 
 // we'll need this a lot, like a lot a lot
 const body = document.getElementById('body')
-
-const buildMap = () => {
-
-}
 
 const initializeGame = () => {
     // Build UI
@@ -651,10 +684,10 @@ const initializeGame = () => {
     const floorOne = new GameWorld
     floorOne.mapDraw()
 
-    const playerCharacter = new PlayerCharacter(`pc0`, 0, floorOne.pcSpawnCoordinates())
+    playerCharacter = new PlayerCharacter(`pc0`, 0, floorOne.pcSpawnCoordinates())
     playerCharacter.render()
     actorList.push(playerCharacter)
-    enemySpawn(5)
+    floorOne.enemySpawn(5)
 }
 
 const characterSelectionScreen = () => {
