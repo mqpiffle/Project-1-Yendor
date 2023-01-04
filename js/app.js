@@ -448,14 +448,45 @@ document.addEventListener('keypress', (e) => {
 
 // TODO:
 // 1) add text to Instructions and About
-// 2) add input form(s) to character selction screen (character name and class selector)
-// 2A) start game loop when enter dungeon button clicked
-// 3) choose some better fonts
+// *) add input form(s) to character selction screen (character name and class selector)
+// 2) start game loop when enter dungeon button clicked
+// *) choose some better fonts
+// 3) create in-game UI
 
 // we'll need this a lot, like a lot a lot
 const body = document.getElementById('body')
 
 const initializeGame = () => {
+    // Build UI
+    const gameContainer =  document.createElement('div')
+    gameContainer.id = 'game-container'
+    const gameTop = document.createElement('div')
+    gameTop.id = 'game-top-ui'
+    gameTop.className = 'UI-game-element'
+    const gameTopCharName = document.createElement('div')
+    gameTopCharName.id = 'game-top-char-name'
+    gameTopCharName.className = 'UI-game-element'
+    const gameTopCharClass = document.createElement('div')
+    gameTopCharClass.id = 'game-top-char-class'
+    gameTopCharClass.className = 'UI-game-element'
+    const gameTopCharLevel = document.createElement('div')
+    gameTopCharLevel.id = 'game-top-char-level'
+    gameTopCharLevel.className = 'UI-game-element'
+    const gameTopTrackBars = document.createElement('div')
+    gameTopTrackBars.id = 'game-top-track-bars'
+    gameTopTrackBars.className = 'UI-game-element'
+    const gameHealthBar = document.createElement('div')
+    gameHealthBar.id = 'game-top-health-bar'
+    gameHealthBar.className = 'UI-game-track-bar'
+    const gameEnergyBar = document.createElement('div')
+    gameEnergyBar.id = 'game-top-energy-bar'
+    gameEnergyBar.className = 'UI-game-track-bar'
+    const gameXpBar = document.createElement('div')
+    gameXpBar.id = 'game-top-xp-bar'
+    gameXpBar.className = 'UI-game-track-bar'
+
+
+
 
 }
 
@@ -467,7 +498,7 @@ const characterSelectionScreen = () => {
     charactersSelectionTitleDiv.id = 'characters-selection-title-container'
     charactersSelectionTitleDiv.className = 'UI-title-container'
     const title = document.createElement('h1')
-    // *** insert character name form here
+    // *** insert character name form here ???
     const charactersForm = document.createElement('form')
     // this should probably be a selection form
     charactersForm.id = 'characters-form-container'

@@ -45,7 +45,7 @@ canvas {
             hsl(0 0% 0% / .1), 
             hsl(0 0% 0% / .75)
         ),
-        /* url(../images/1018.png); */
+        url(../images/1018.png);
 }
 
 .UI-title-container {
@@ -96,6 +96,14 @@ h1 {
     padding: 1rem 2rem;
 }
 
+#game-container {
+    width: fit-content;
+    margin: 18rem auto;
+    border: 1px solid var(--neutral-90);
+    border-radius: 1rem;
+}
+
+/* *********** BUTTONS *********** */
 .UI-character-select-button {
     width: 128px;
     height: 128px;
