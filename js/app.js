@@ -7,6 +7,12 @@ let turn = 0
 
 const body = document.getElementById('body')
 
+// I need to do something to create stateful bits of the UI
+// ie: hp/energy/xp bars, turn counter, and message log that update every turn
+// maybe using a class for game UI will work??
+
+
+
 const gameUI = () => {
     // Build UI
     const gameContainer =  document.createElement('div')
