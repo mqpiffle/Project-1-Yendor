@@ -1,116 +1,11 @@
 // *********** GLOBAL STUFF ***********
-
-// const game = document.getElementById('primary-canvas')
-// const movement = document.getElementById('movement')
-// const message = document.getElementById('message')
-
-// const ctx = game.getContext('2d')
-
-// game.setAttribute('width', getComputedStyle(game)['width'])
-// game.setAttribute('height', getComputedStyle(game)['height'])
-// game.width = 900
-// game.height = 900
-const gridSize = 30
+const gridSize = 48
 const tileCenter = gridSize / 2
-// actorListList is a list of all mobile objects currently in play
-// the playerCharacter will always be at position [0]
 const actorList = []
 let playerCharacter
-let characterName
-let characterClass
 let turn = 0
 
-
-
-
-
-
-// *********** GAME LOOP STUFF ***********
-
-// presentational map board for development
-
-// const checkerboard = (horiz, vert) => {
-//     if (horiz % 2 === 0) {
-//         return `hsl(0 0% ${30 + (vert % 2) * 2}%`
-//     } else {
-//         return `hsl(0 0% ${32 - (vert % 2) * 2}%`
-//     }
-// }
-
-// make a map grid
-
-// const mapDraw = () => {
-//     for (let i = 0; i < game.width / gridSize; i++) {
-//         for (let j = 0; j < game.height / gridSize; j++) {
-//             ctx.fillStyle = checkerboard(i, j)
-//             ctx.fillRect(i * gridSize, j * gridSize, gridSize, gridSize)
-//         }
-//     }
-// }
-// create the initial map overlay, will also be called on every game turn (redraw)
-
-
-
-// const pcSpawnCoordinates = () => {
-    //spawn pc within 3 tiles of any edge
-    // let coordinateTest = false
-    // let rndX = Math.floor(Math.random() * (game.width / gridSize))
-    // console.log(`initial pc x: ${rndX}`)
-    // let rndY = Math.floor(Math.random() * (game.height / gridSize))
-    // console.log(`initial pc y: ${rndY}`)
-    // console.log(`width within middle ${rndWidth >= 3 && rndWidth <= (game.width / gridSize) - 3}`)
-    // console.log(`height within middle ${rndHeight >= 3 && rndHeight <= (game.width / gridSize) - 3}`)
-    // console.log(`width within middle and height within middle ${(rndWidth >= 3 && rndWidth <= (game.width / gridSize) - 3) && (rndHeight >= 3 && rndHeight <= (game.height / gridSize) - 3)}`)
-    // let coordinates = []
-    // while (!coordinateTest) {
-        // if ((rndX >= 3 && rndX < (game.width / gridSize) - 3) && (rndY >= 3 && rndY <= (game.height / gridSize) - 3)) {
-            // rndX = Math.floor(Math.random() * (game.width / gridSize))
-            // console.log(`new pc x: ${rndX}`)
-    //     } else {
-    //         coordinateTest = true
-    //     }
-    // }
-    
-    // coordinates = [rndX * gridSize + tileCenter, rndY * gridSize + tileCenter]
-    // console.log(`pc coordinates ${coordinates}`)
-//     return coordinates
-// }
-
-// const enemySpawnCoordinates = () => {
-//     let coordinateTest = false
-    //spawn enemy(s) at least 5 tiles away from pc
-    //get player coordinates
-    // const pcCoordsRaw = actorList[0].gridPos
-    //'normalize' player coordinates
-    // const pcCoords = pcCoordsRaw.map(coord => (coord - 15) / gridSize)
-    // console.log(`normailzed pc coordinates ${pcCoords}`)
-    //random X and Y, bound by the visible grid
-    // let rndX = Math.floor(Math.random() * (game.width / gridSize))
-    // console.log(`initial enemy x: ${rndX}`)
-    // let rndY = Math.floor(Math.random() * (game.height / gridSize))
-    // console.log(`initial enemy y: ${rndY}`)
-    // let coordinates = []
-    // while (!coordinateTest) {
-        // if the difference between either (X/Y) of pc and enemy is less than 5 OR
-        // if the coordinates already exist in the occupied tiles grid
-        // if ((Math.abs(pcCoords[0] - rndX) < 5 && Math.abs(pcCoords[1] - rndY) < 5) && (playerCharacter.xPos === rndX && playerCharacter.yPos === rndY)) {
-            //rerollX
-        //     rndX = Math.floor(Math.random() * (game.width / gridSize))
-        //     rndY = Math.floor(Math.random() * (game.height / gridSize))
-        // } else {
-            // we are good to go!
-            // coordinateTest = true
-    //     }
-    // }
-    //the re-un-normalized coordinates
-    // coordinates = [rndX * gridSize + tileCenter, rndY * gridSize + tileCenter]
-
-    // console.log(`enemy coordinates ${coordinates}`)
-    //add these coords to an array for future testing
-    // console.log(`enemy occupied tiles array: ${occupiedTiles}`)
-    //gimme
-//     return coordinates
-// }
+// these functions can probably go in classes? idk
 
 const enemySpawn = (numberToSpawn) => {
     for (let i = 1; i <= numberToSpawn; i++) {
@@ -150,10 +45,6 @@ const enemyDefeat = (enemy) => {
     enemy.render('transparent')
     actorList.splice(enemy.actorListArrayPos, 1)
 }
-
-// create character sprite and spawn
-// first create a basic MOB class with traits shared be friend and foe alike
-
 
 class GameObject {
     constructor () {
@@ -195,9 +86,13 @@ class MobileObject extends GameObject {
         this.baseAttack = 10
         this.attackType = ''
         this.basePhysResist = 0
-        this.baseMagResist = 0
+        // this.baseMagResist = 0
+        // this.targUp = [this.xPos, this.yPos - gridSize]
+        // this.boundUp = this.yPos > tileCenter
+        // this.deltaUp = this.yPos -= gridSize 
     }
-    meleeAttack = (target) => {
+
+    meleeAttack = function(target)  {
         let defenderHealth = target.baseHealth
         const incomingDamage = this.baseAttack - (this.baseAttack * target.basePhysResist)
         defenderHealth = defenderHealth - incomingDamage
@@ -206,6 +101,18 @@ class MobileObject extends GameObject {
     }
 
     // ***I feel like these can be refactored into one 'move' function, maybe later***
+    // move = function(targPos, boundCheck, moveDir) {
+    //     const targetAt = actorAt(targPos[0], targPos[1])
+    //     if (!isCollision(targPos[0], targPos[1]) && boundCheck) {
+    //         moveDir
+    //     } else if (isCollision(targPos[0], targPos[1]) && this.enemyType === targetAt.characterType) {
+    //         targetAt.baseHealth = this.meleeAttack(targetAt)
+    //         console.log(targetAt.baseHealth)
+    //         if (targetAt.characterType === 'ENEMY' && targetAt.baseHealth <= 0) {
+    //             enemyDefeat(targetAt)
+    //         }
+    //     }
+    // }
 
     moveUp = function() {
         const targetAt = actorAt(this.xPos, this.yPos - gridSize)
@@ -285,8 +192,8 @@ class MobileObject extends GameObject {
             if (targetAt.characterType === 'ENEMY' && targetAt.baseHealth <= 0) {
                 enemyDefeat(targetAt)
             }
-        }
         // console.log('down-left')
+        }
     }
     moveLeft = function() {
         const targetAt = actorAt(this.xPos - gridSize, this.yPos)
@@ -318,26 +225,35 @@ class MobileObject extends GameObject {
 
 // the player character inherits the MOB's traits, and adds its own (specifically move and other action methods)
 class PlayerCharacter extends MobileObject {
-    constructor (uid, actorListArrayPos, gridPos, characterType, baseAttack, canvas, ctx, width, height) {
-        super(uid, actorListArrayPos, gridPos, characterType, baseAttack, canvas, ctx, width, height)
+    constructor (uid, actorListArrayPos, gridPos, characterType, baseAttack, canvas, ctx, width, height, xPos, yPos) {
+        super(uid, actorListArrayPos, gridPos, characterType, baseAttack, canvas, ctx, width, height, xPos, yPos)
         this.characterType = 'PC'
         this.enemyType = 'ENEMY'
         this.displayColor = 'skyBlue'
         this.baseAttack = 50
+        this.level = 1
     }
 
     render = function () {
-        this.ctx.beginPath()
-        this.ctx.arc(this.xPos, this.yPos, gridSize / 3, 0, 2.0 * Math.PI)
-        this.ctx.fillStyle = this.displayColor
-        this.ctx.fill()
+        const pcSprite = new Image()
+        pcSprite.onload = () => {
+            this.ctx.drawImage(pcSprite, this.xPos - tileCenter, this.yPos - tileCenter, gridSize, gridSize)
+        }
+        pcSprite.src = '../images/BoY_warrior_1.png'
+        // this.ctx.beginPath()
+        // this.ctx.arc(this.xPos, this.yPos, gridSize / 3, 0, 2.0 * Math.PI)
+        // this.ctx.fillStyle = this.displayColor
+        // this.ctx.fill()
     }
 
     endTurn = () => {
         this.ctx.clearRect(0, 0, this.width, this.height)
         this.mapDraw()
         actorList.splice(0, 1, playerCharacter)
-        actorList[0].render()
+        setTimeout(() => {
+            actorList[0].render()
+        }, 50)
+        
         // console.log(actorList[0].baseHealth)
         for (let i = 1; i < actorList.length; i++) {
             let enemy = actorList[i]
@@ -351,40 +267,40 @@ class PlayerCharacter extends MobileObject {
         console.log(turn)
     }
 
+    
     movementHandler = function(key) {
         // we'll use the numPad for movement and explicitly define the diagonals
         if (key === 56) {
-            // if (isCollision(this.xPos, this.yPos - gridSize) === false && this.yPos > tileCenter) {
             this.moveUp()
         }
         if (key === 57) {
-            // if (isCollision(this.xPos, this.yPos - gridSize) === false && this.yPos > tileCenter) {
             this.moveUpRight()
         }
-        if (key === 54) {
-            // if (isCollision(this.xPos + gridSize, this.yPos) === false && this.xPos < game.width - tileCenter) {                        
+        if (key === 54) {            
             this.moveRight()
         }
         if (key === 51) {
-            // if (isCollision(this.xPos, this.yPos - gridSize) === false && this.yPos > tileCenter) {
             this.moveDownRight()
         }
         if (key === 50) {
-            // if (isCollision(this.xPos, this.yPos +gridSize) === false && this.yPos < game.height - tileCenter) {
             this.moveDown()
         }
         if (key === 49) {
-            // if (isCollision(this.xPos, this.yPos - gridSize) === false && this.yPos > tileCenter) {
             this.moveDownLeft()
         }
         if (key === 52) {
             this.moveLeft()
         }
         if (key === 55) {
-            // if (isCollision(this.xPos, this.yPos - gridSize) === false && this.yPos > tileCenter) {
             this.moveUpLeft()
         }
         this.endTurn()
+    }
+}
+class PlayerClass extends PlayerCharacter {
+    constructor() {
+        super()
+        this.class = localStorage.getItem('charClass')
     }
 }
 
@@ -459,8 +375,6 @@ class GameWorld extends GameObject {
     constructor(canvas, ctx) {
         super(canvas, ctx)
     }
-
-    
 
     pcSpawnCoordinates = () => {
         //spawn pc within 3 tiles of any edge
@@ -612,6 +526,14 @@ const initializeGame = () => {
     const gameTopCharLevel = document.createElement('div')
     gameTopCharLevel.id = 'game-top-char-level'
     gameTopCharLevel.className = 'UI-game-element'
+    const gameTopCharLevelLabel = document.createElement('p')
+    gameTopCharLevelLabel.id = 'game-top-char-level-label'
+    gameTopCharLevelLabel.className = 'UI-game-display-label'
+    gameTopCharLevelLabel.innerText = 'Level:'
+    const gameTopCharLevelText = document.createElement('h2')
+    gameTopCharLevelText.id = 'game-top-char-level-text'
+    gameTopCharLevelText.className = 'UI-game-display-text'
+    gameTopCharLevelText.innerText = '1'
     const gameTopTrackBarsContainer = document.createElement('div')
     gameTopTrackBarsContainer.id = 'game-top-track-bars-container'
     gameTopTrackBarsContainer.className = 'UI-game-element'
@@ -629,8 +551,8 @@ const initializeGame = () => {
     gameTopTurnCounter.className = 'UI-game-element'
     const gameCanvas = document.createElement('canvas')
     gameCanvas.id = 'primary-canvas'
-    gameCanvas.width = '900'
-    gameCanvas.height = '900'
+    gameCanvas.width = '960'
+    gameCanvas.height = '960'
     const gameBottom = document.createElement('div')
     gameBottom.id = 'game-bottom-ui'
     gameBottom.className = 'UI-game-element'
@@ -666,6 +588,8 @@ const initializeGame = () => {
     gameTopCharClass.appendChild(gameTopCharClassLabel)
     gameTopCharClass.appendChild(gameTopCharClassText)
     gameTopCharInfoContainer.appendChild(gameTopCharLevel)
+    gameTopCharLevel.appendChild(gameTopCharLevelLabel)
+    gameTopCharLevel.appendChild(gameTopCharLevelText)
     gameTop.appendChild(gameTopTrackBarsContainer)
     gameTopTrackBarsContainer.appendChild(gameHealthBar)
     gameTopTrackBarsContainer.appendChild(gameEnergyBar)
@@ -929,9 +853,9 @@ document.addEventListener('DOMContentLoaded', splashScreen)
 // *) enemy needs to attack @ 1 range
 // *) start filling out the ui
 // 1) style the UI elements -- in progress
-// 2) Add character name and character class selcetion to local storage to be used in-game
+// 2) Add character name and character class selection to local storage to be used in-game
 // 3) give the charcter a weapon. have the enemies drop weapons on defeat
-// 4) refactor the friggin move functions - should be able to do it with ONE function
+// 4) refactor the friggin move functions - should be able to do it with ONE function (cries)
 
 // ?) refactorList spawn code - take in param such that if(param) executes its own while loop, since the rest is basically the same
 // create UI

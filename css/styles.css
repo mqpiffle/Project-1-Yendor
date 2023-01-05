@@ -100,21 +100,51 @@ h1 {
     border: 7px solid var(--primary-clr);
 }
 
-#game-top-ui, #game-bottom-ui {
+#game-top-ui {
+    display: flex;
+    grid-template-columns: repeat(auto-fit, 1fr);
+    background: radial-gradient(hsl(0 100% 100% / .25), hsl(0 100% 100% / .5));
+    margin-block: 1rem;
+
+}
+
+#game-bottom-ui {
     display: flex;
     background: radial-gradient(hsl(0 100% 100% / .25), hsl(0 100% 100% / .5));
     margin-block: 1rem;
-   
 }
 
 #game-top-char-info-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: 40%;
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-columns: repeat(3, 1fr);
     padding: .5rem 1rem;
     gap: 1rem;
 }
 
+#game-top-track-bars-container {
+    width: 40%;
+    display: grid;
+    grid-auto-flow: row;
+    grid-template-rows: repeat(3, 1fr);
+}
+
+#game-top-health-bar {
+    border: 3px solid red;
+}
+
+#game-top-energy-bar {
+    border: 3px solid blue;
+}
+
+#game-top-xp-bar {
+    border: 3px solid yellow;
+}
+
+.UI-game-element {
+    padding: 0 .5rem;
+}
 .UI-game-display-label {
     font-size: .75rem;
     margin: 0;
