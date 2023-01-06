@@ -3,7 +3,7 @@ const gridSize = 48
 const tileCenter = gridSize / 2
 const actorList = []
 let playerCharacter
-let turn = 0
+let baseUI
 
 const body = document.getElementById('body')
 
@@ -12,140 +12,186 @@ const body = document.getElementById('body')
 // maybe using a class for game UI will work??
 
 
+// *********** UI STUFF ***********
 
-const gameUI = () => {
+class gameUI {
+    constructor() {
+        this.pc = actorList[0]
+        this.turn = 0
+        this.turnDisplay = null
+        this.message = ''
+    }
     // Build UI
-    const gameContainer =  document.createElement('div')
-    gameContainer.id = 'game-container'
-    // TOP game info element (character info, hp/energy/xp bars)
-    const gameTop = document.createElement('div')
-    gameTop.id = 'game-top-ui'
-    gameTop.className = 'UI-game-element'
-    const gameTopCharInfoContainer = document.createElement('div')
-    gameTopCharInfoContainer.id = 'game-top-char-info-container'
-    gameTopCharInfoContainer.className = 'UI-game-element'
-    const gameTopCharName = document.createElement('div')
-    gameTopCharName.id = 'game-top-char-name'
-    gameTopCharName.className = 'UI-game-sub-element'
-    const gameTopCharNameLabel = document.createElement('p')
-    gameTopCharNameLabel.id = 'game-top-char-name-label'
-    gameTopCharNameLabel.className = 'UI-game-display-label'
-    gameTopCharNameLabel.innerText = 'Name:'
-    const gameTopCharNameText = document.createElement('h2')
-    gameTopCharNameText.id = 'game-top-char-name-text'
-    gameTopCharNameText.className = 'UI-game-display-text'
-    gameTopCharNameText.innerText = localStorage.getItem('charName') 
-    const gameTopCharClass = document.createElement('div')
-    gameTopCharClass.id = 'game-top-char-class'
-    gameTopCharClass.className = 'UI-game-sub-element'
-    const gameTopCharClassLabel = document.createElement('p')
-    gameTopCharClassLabel.id = 'game-top-char-class-label'
-    gameTopCharClassLabel.className = 'UI-game-display-label'
-    gameTopCharClassLabel.innerText = 'Class:'
-    const gameTopCharClassText = document.createElement('h2')
-    gameTopCharClassText.id = 'game-top-char-class-text'
-    gameTopCharClassText.className = 'UI-game-display-text'
-    gameTopCharClassText.innerText = localStorage.getItem('charClass')
-    const gameTopCharLevel = document.createElement('div')
-    gameTopCharLevel.id = 'game-top-char-level'
-    gameTopCharLevel.className = 'UI-game-sub-element'
-    const gameTopCharLevelLabel = document.createElement('p')
-    gameTopCharLevelLabel.id = 'game-top-char-level-label'
-    gameTopCharLevelLabel.className = 'UI-game-display-label'
-    gameTopCharLevelLabel.innerText = 'Level:'
-    const gameTopCharLevelText = document.createElement('h2')
-    gameTopCharLevelText.id = 'game-top-char-level-text'
-    gameTopCharLevelText.className = 'UI-game-display-text'
-    gameTopCharLevelText.innerText = '1'
-    const gameTopTrackBarsContainer = document.createElement('div')
-    gameTopTrackBarsContainer.id = 'game-top-track-bars-container'
-    gameTopTrackBarsContainer.className = 'UI-game-element'
-    const gameHealthBar = document.createElement('div')
-    gameHealthBar.id = 'game-top-health-bar'
-    gameHealthBar.className = 'UI-game-track-bar'
-    const gameEnergyBar = document.createElement('div')
-    gameEnergyBar.id = 'game-top-energy-bar'
-    gameEnergyBar.className = 'UI-game-track-bar'
-    const gameXpBar = document.createElement('div')
-    gameXpBar.id = 'game-top-xp-bar'
-    gameXpBar.className = 'UI-game-track-bar'
-    const gameTopTurnCounter = document.createElement('div')
-    gameTopTurnCounter.id = 'game-top-turn-counter'
-    gameTopTurnCounter.className = 'UI-game-sub-element'
-    const gameTopTurnCounterLabel = document.createElement('p')
-    gameTopTurnCounterLabel.id = 'game-top-turn-counter-label'
-    gameTopTurnCounterLabel.className = 'UI-game-display-label'
-    gameTopTurnCounterLabel.innerText = 'Turn:'
-    const gameTopTurnCounterText = document.createElement('h2')
-    gameTopTurnCounterText.id = 'game-top-turn-counter-text'
-    gameTopTurnCounterText.className = 'UI-game-display-text'
-    gameTopTurnCounterText.innerText = turn
-    // CANVAS - where the magic happens
-    const gameCanvas = document.createElement('canvas')
-    gameCanvas.id = 'primary-canvas'
-    gameCanvas.width = '960'
-    gameCanvas.height = '960'
-    const gameBottom = document.createElement('div')
-    gameBottom.id = 'game-bottom-ui'
-    gameBottom.className = 'UI-game-element'
-    // BOTTOM game info element (character skills/actions, output log)
-    const gameBottomSkillsContainer = document.createElement('div')
-    gameBottomSkillsContainer.id = 'game-bottom-skills-container'
-    gameBottomSkillsContainer.className = 'UI-game-element'
-    const gameCurrentWeapon = document.createElement('div')
-    gameCurrentWeapon.id = 'game-current-weapon'
-    gameCurrentWeapon.className = 'game-skill-button'
-    const gameSkill1 = document.createElement('div')
-    gameSkill1.id = 'game-skill-1'
-    gameSkill1.className = 'game-skill-button'
-    const gameSkill2 = document.createElement('div')
-    gameSkill2.id = 'game-skill-2'
-    gameSkill2.className = 'game-skill-button'
-    const gameSkill3 = document.createElement('div')
-    gameSkill3.id = 'game-skill-3'
-    gameSkill3.className = 'game-skill-button'
-    const gameBottomOutputLog = document.createElement('div')
-    gameBottomOutputLog.id = 'game-bottom-output-log'
+    topBar = function() {
+        console.log(`turn counter ${this.turn}`)
+        const gameTop = document.createElement('div')
+        gameTop.id = 'game-top-ui'
+        gameTop.className = 'UI-game-element'
+        const gameTopCharInfoContainer = document.createElement('div')
+        gameTopCharInfoContainer.id = 'game-top-char-info-container'
+        gameTopCharInfoContainer.className = 'UI-game-element'
+        const gameTopCharName = document.createElement('div')
+        gameTopCharName.id = 'game-top-char-name'
+        gameTopCharName.className = 'UI-game-sub-element'
+        const gameTopCharNameLabel = document.createElement('p')
+        gameTopCharNameLabel.id = 'game-top-char-name-label'
+        gameTopCharNameLabel.className = 'UI-game-display-label'
+        gameTopCharNameLabel.innerText = 'Name:'
+        const gameTopCharNameText = document.createElement('h2')
+        gameTopCharNameText.id = 'game-top-char-name-text'
+        gameTopCharNameText.className = 'UI-game-display-text'
+        gameTopCharNameText.innerText = localStorage.getItem('charName') 
+        const gameTopCharClass = document.createElement('div')
+        gameTopCharClass.id = 'game-top-char-class'
+        gameTopCharClass.className = 'UI-game-sub-element'
+        const gameTopCharClassLabel = document.createElement('p')
+        gameTopCharClassLabel.id = 'game-top-char-class-label'
+        gameTopCharClassLabel.className = 'UI-game-display-label'
+        gameTopCharClassLabel.innerText = 'Class:'
+        const gameTopCharClassText = document.createElement('h2')
+        gameTopCharClassText.id = 'game-top-char-class-text'
+        gameTopCharClassText.className = 'UI-game-display-text'
+        gameTopCharClassText.innerText = localStorage.getItem('charClass')
+        const gameTopCharLevel = document.createElement('div')
+        gameTopCharLevel.id = 'game-top-char-level'
+        gameTopCharLevel.className = 'UI-game-sub-element'
+        const gameTopCharLevelLabel = document.createElement('p')
+        gameTopCharLevelLabel.id = 'game-top-char-level-label'
+        gameTopCharLevelLabel.className = 'UI-game-display-label'
+        gameTopCharLevelLabel.innerText = 'Level:'
+        const gameTopCharLevelText = document.createElement('h2')
+        gameTopCharLevelText.id = 'game-top-char-level-text'
+        gameTopCharLevelText.className = 'UI-game-display-text'
+        gameTopCharLevelText.innerText = '1'
+        const gameTopTrackBarsContainer = document.createElement('div')
+        gameTopTrackBarsContainer.id = 'game-top-track-bars-container'
+        gameTopTrackBarsContainer.className = 'UI-game-element'
+        const gameHealthBar = document.createElement('div')
+        gameHealthBar.id = 'game-top-health-bar'
+        gameHealthBar.className = 'UI-game-track-bar'
+        const gameHealthRemainingBar = document.createElement('div')
+        gameHealthRemainingBar.id = 'game-top-health-remaining-bar'
+        gameHealthRemainingBar.className = 'UI-game-track-level-bar'
+        const gameEnergyBar = document.createElement('div')
+        gameEnergyBar.id = 'game-top-energy-bar'
+        gameEnergyBar.className = 'UI-game-track-bar'
+        const gameEnergyRemainingBar = document.createElement('div')
+        gameEnergyRemainingBar.id = 'game-top-energy-remaining-bar'
+        gameEnergyRemainingBar.className = 'UI-game-track-level-bar'
+        const gameXpBar = document.createElement('div')
+        gameXpBar.id = 'game-top-xp-bar'
+        gameXpBar.className = 'UI-game-track-bar'
+        const gameXpToNextLevelBar = document.createElement('div')
+        gameXpToNextLevelBar.id = 'game-top-xp-to-next-level-bar'
+        gameXpToNextLevelBar.className = 'UI-game-track-level-bar'
+        const gameTopAltInfoContainer = document.createElement('div')
+        gameTopAltInfoContainer.id = 'game-top-turn-info-container'
+        gameTopAltInfoContainer.className = 'UI-game-element'
+        const gameTopTurnCounter = document.createElement('div')
+        gameTopTurnCounter.className = 'UI-game-sub-element'
+        const gameTopTurnCounterLabel = document.createElement('p')
+        gameTopTurnCounterLabel.id = 'game-top-turn-counter-label'
+        gameTopTurnCounterLabel.className = 'UI-game-display-label'
+        gameTopTurnCounterLabel.innerText = 'Turn:'
+        const gameTopTurnCounterText = document.createElement('h2')
+        gameTopTurnCounterText.id = 'game-top-turn-counter-text'
+        gameTopTurnCounterText.className = 'UI-game-display-text'
+        gameTopTurnCounterText.textContent = `${this.turn}`
 
-    
+        gameTop.innerHTML = ''
+        gameTop.appendChild(gameTopCharInfoContainer)
+        gameTopCharInfoContainer.appendChild(gameTopCharName)
+        gameTopCharName.appendChild(gameTopCharNameLabel)
+        gameTopCharName.appendChild(gameTopCharNameText)
+        gameTopCharInfoContainer.appendChild(gameTopCharClass)
+        gameTopCharClass.appendChild(gameTopCharClassLabel)
+        gameTopCharClass.appendChild(gameTopCharClassText)
+        gameTopCharInfoContainer.appendChild(gameTopCharLevel)
+        gameTopCharLevel.appendChild(gameTopCharLevelLabel)
+        gameTopCharLevel.appendChild(gameTopCharLevelText)
+        gameTop.appendChild(gameTopTrackBarsContainer)
+        gameTopTrackBarsContainer.appendChild(gameHealthBar)
+        gameHealthBar.appendChild(gameHealthRemainingBar)
+        gameTopTrackBarsContainer.appendChild(gameEnergyBar)
+        gameEnergyBar.appendChild(gameEnergyRemainingBar)
+        gameTopTrackBarsContainer.appendChild(gameXpBar)
+        gameXpBar.appendChild(gameXpToNextLevelBar)
+        gameTop.appendChild(gameTopAltInfoContainer)
+        gameTopAltInfoContainer.appendChild(gameTopTurnCounter)
+        gameTopTurnCounter.appendChild(gameTopTurnCounterLabel)
+        gameTopTurnCounter.appendChild(gameTopTurnCounterText)
 
-    body.innerHTML = ''
-    body.appendChild(gameContainer)
-    gameContainer.appendChild(gameTop)
-    gameTop.appendChild(gameTopCharInfoContainer)
-    gameTopCharInfoContainer.appendChild(gameTopCharName)
-    gameTopCharName.appendChild(gameTopCharNameLabel)
-    gameTopCharName.appendChild(gameTopCharNameText)
-    gameTopCharInfoContainer.appendChild(gameTopCharClass)
-    gameTopCharClass.appendChild(gameTopCharClassLabel)
-    gameTopCharClass.appendChild(gameTopCharClassText)
-    gameTopCharInfoContainer.appendChild(gameTopCharLevel)
-    gameTopCharLevel.appendChild(gameTopCharLevelLabel)
-    gameTopCharLevel.appendChild(gameTopCharLevelText)
-    gameTop.appendChild(gameTopTrackBarsContainer)
-    gameTopTrackBarsContainer.appendChild(gameHealthBar)
-    gameTopTrackBarsContainer.appendChild(gameEnergyBar)
-    gameTopTrackBarsContainer.appendChild(gameXpBar)
-    gameTop.appendChild(gameTopTurnCounter)
-    gameTopTurnCounter.appendChild(gameTopTurnCounterLabel)
-    gameTopTurnCounter.appendChild(gameTopTurnCounterText)
-    gameContainer.appendChild(gameCanvas)
-    gameContainer.appendChild(gameBottom)
-    gameBottom.appendChild(gameBottomSkillsContainer)
-    gameBottomSkillsContainer.appendChild(gameCurrentWeapon)
-    gameBottomSkillsContainer.appendChild(gameSkill1)
-    gameBottomSkillsContainer.appendChild(gameSkill2)
-    gameBottomSkillsContainer.appendChild(gameSkill3)
-    gameBottom.appendChild(gameBottomOutputLog)
+        this.turnDisplay = gameTopTurnCounterText
 
-    // hmmm...now the game can't figure out canvas? because it doesn't exist
-    // const floorOne = new GameWorld()
-    // floorOne.mapDraw()
+        return gameTop
+    }
 
-    // playerCharacter = new PlayerCharacter(`pc0`, 0, floorOne.pcSpawnCoordinates())
-    // playerCharacter.render()
-    // actorList.push(playerCharacter)
-    // floorOne.enemySpawn(5)
+    bottomBar = function() {
+        const gameBottom = document.createElement('div')
+        gameBottom.id = 'game-bottom-ui'
+        gameBottom.className = 'UI-game-element'
+        // BOTTOM game info element (character skills/actions, output log)
+        const gameBottomSkillsContainer = document.createElement('div')
+        gameBottomSkillsContainer.id = 'game-bottom-skills-container'
+        gameBottomSkillsContainer.className = 'UI-game-element'
+        const gameCurrentWeapon = document.createElement('div')
+        gameCurrentWeapon.id = 'game-current-weapon'
+        gameCurrentWeapon.className = 'game-skill-button'
+        const gameSkill1 = document.createElement('div')
+        gameSkill1.id = 'game-skill-1'
+        gameSkill1.className = 'game-skill-button'
+        const gameSkill2 = document.createElement('div')
+        gameSkill2.id = 'game-skill-2'
+        gameSkill2.className = 'game-skill-button'
+        const gameSkill3 = document.createElement('div')
+        gameSkill3.id = 'game-skill-3'
+        gameSkill3.className = 'game-skill-button'
+        const gameBottomOutputLog = document.createElement('div')
+        gameBottomOutputLog.id = 'game-bottom-output-log'
+
+        gameBottom.innerHTML = ''
+        gameBottom.appendChild(gameBottomSkillsContainer)
+        gameBottomSkillsContainer.appendChild(gameCurrentWeapon)
+        gameBottomSkillsContainer.appendChild(gameSkill1)
+        gameBottomSkillsContainer.appendChild(gameSkill2)
+        gameBottomSkillsContainer.appendChild(gameSkill3)
+        gameBottom.appendChild(gameBottomOutputLog)
+
+        return gameBottom
+    }
+
+
+    update = function(curHlth, maxHlth) {
+        this.turn++
+        this.turnDisplay.textContent = `${this.turn}`
+
+        console.log(curHlth / maxHlth)
+        
+        // health bar update
+        const healthBar = document.getElementById('game-top-health-remaining-bar')
+        healthBar.style.width = `${(curHlth / maxHlth) * 100}%`
+        // this.topBar()
+    }
+
+    init = function() {
+        const gameContainer =  document.createElement('div')
+        gameContainer.id = 'game-container'
+        // TOP game info element (character info, hp/energy/xp bars)
+        
+        // CANVAS - where the magic happens
+        const gameCanvas = document.createElement('canvas')
+        gameCanvas.id = 'primary-canvas'
+        gameCanvas.width = '960'
+        gameCanvas.height = '960'
+
+        
+
+        body.innerHTML = ''
+        body.appendChild(gameContainer)
+        gameContainer.appendChild(this.topBar())
+        gameContainer.appendChild(gameCanvas)
+        gameContainer.appendChild(this.bottomBar())
+    }
 }
 
 
@@ -174,6 +220,19 @@ const gameUI = () => {
 //     }, 200)
 //     return gameTopTurnCounter
 // }
+
+const initializeGame = () => {
+    baseUI = new gameUI()
+    baseUI.init()
+    // hmmm...now the game can't figure out canvas? because it doesn't exist
+    const floorOne = new GameWorld()
+    floorOne.mapDraw()
+
+    playerCharacter = new PlayerCharacter(`pc0`, 0, floorOne.pcSpawnCoordinates())
+    playerCharacter.render()
+    actorList.push(playerCharacter)
+    floorOne.enemySpawn(5)
+}
 
 const characterSelectionScreen = () => {
     const charactersSelectionContainerDiv = document.createElement('div')
@@ -472,12 +531,17 @@ class MobileObject extends GameObject {
         this.gridY = this.yPos / gridSize + tileCenter
         this.characterType = 'MOB'
         this.alive = true
-        this.baseHealth = 100
-        this.baseEnergy = 100
-        this.baseAttack = 10
+        this.maxHealth = 120
+        this.currentHealth = 120
+        this.maxEnergy = 100
+        this.currentEnergy = 100
+        this.xpToNextLevel = 100
+        this.currentXp = 0
+        this.physAttack = 10
+        this.magAttack = 0
         this.attackType = ''
-        this.basePhysResist = 0
-        this.baseMagResist = 0
+        this.physResist = 0
+        this.magResist = 0
         // this.targUp = [this.xPos, this.yPos - gridSize]
         // this.boundUp = this.yPos > tileCenter
     }
@@ -507,17 +571,17 @@ class MobileObject extends GameObject {
     //     if (!isCollision(targPos[0], targPos[1]) && boundCheck) {
     //         moveDir1()
     //     } else if (isCollision(targPos[0], targPos[1]) && this.enemyType === targetAt.characterType) {
-    //         targetAt.baseHealth = this.meleeAttack(targetAt)
-    //         console.log(targetAt.baseHealth)
-    //         if (targetAt.characterType === 'ENEMY' && targetAt.baseHealth <= 0) {
+    //         targetAt.currentHealth= this.meleeAttack(targetAt)
+    //         console.log(targetAt.currentHealth)
+    //         if (targetAt.characterType === 'ENEMY' && targetAt.currentHealth<= 0) {
     //             enemyDefeat(targetAt)
     //         }
     //     }
     // }
 
     meleeAttack = function(target)  {
-        let defenderHealth = target.baseHealth
-        const incomingDamage = this.baseAttack - (this.baseAttack * target.basePhysResist)
+        let defenderHealth = target.currentHealth
+        const incomingDamage = this.physAttack - (this.physAttack * target.physResist) + this.magAttack - (this.magAttack * target.magResist)
         defenderHealth = defenderHealth - incomingDamage
         console.log(`${this.uid} deals ${incomingDamage} to ${target.uid}`)
         return defenderHealth
@@ -528,9 +592,9 @@ class MobileObject extends GameObject {
         if (!isCollision(this.xPos, this.yPos - gridSize) && this.yPos > tileCenter) {
             this.yPos -= gridSize
         } else if (isCollision(this.xPos, this.yPos - gridSize) && this.enemyType === targetAt.characterType) {
-            targetAt.baseHealth = this.meleeAttack(targetAt)
-            console.log(targetAt.baseHealth)
-            if (targetAt.characterType === 'ENEMY' && targetAt.baseHealth <= 0) {
+            targetAt.currentHealth= this.meleeAttack(targetAt)
+            console.log(targetAt.currentHealth)
+            if (targetAt.characterType === 'ENEMY' && targetAt.currentHealth<= 0) {
                 enemyDefeat(targetAt)
             }
         }
@@ -542,9 +606,9 @@ class MobileObject extends GameObject {
             this.yPos -= gridSize
             this.xPos += gridSize
         } else if (isCollision(this.xPos + gridSize, this.yPos - gridSize) && this.enemyType === targetAt.characterType) {
-            targetAt.baseHealth = this.meleeAttack(targetAt)
-            console.log(targetAt.baseHealth)
-            if (targetAt.characterType === 'ENEMY' && targetAt.baseHealth <= 0) {
+            targetAt.currentHealth= this.meleeAttack(targetAt)
+            console.log(targetAt.currentHealth)
+            if (targetAt.characterType === 'ENEMY' && targetAt.currentHealth<= 0) {
                 enemyDefeat(targetAt)
             }
         }
@@ -555,9 +619,9 @@ class MobileObject extends GameObject {
         if (!isCollision(this.xPos + gridSize, this.yPos) && this.xPos < this.width - tileCenter) {
             this.xPos += gridSize
         } else if (isCollision(this.xPos + gridSize, this.yPos) && this.enemyType === targetAt.characterType) {
-            targetAt.baseHealth = this.meleeAttack(targetAt)
-            console.log(targetAt.baseHealth)
-            if (targetAt.characterType === 'ENEMY' && targetAt.baseHealth <= 0) {
+            targetAt.currentHealth= this.meleeAttack(targetAt)
+            console.log(targetAt.currentHealth)
+            if (targetAt.characterType === 'ENEMY' && targetAt.currentHealth<= 0) {
                 enemyDefeat(targetAt)
             }
         }
@@ -569,9 +633,9 @@ class MobileObject extends GameObject {
         this.yPos += gridSize
         this.xPos += gridSize
         } else if (isCollision(this.xPos + gridSize, this.yPos + gridSize) && this.enemyType === targetAt.characterType) {
-            targetAt.baseHealth = this.meleeAttack(targetAt)
-            console.log(targetAt.baseHealth)
-            if (targetAt.characterType === 'ENEMY' && targetAt.baseHealth <= 0) {
+            targetAt.currentHealth= this.meleeAttack(targetAt)
+            console.log(targetAt.currentHealth)
+            if (targetAt.characterType === 'ENEMY' && targetAt.currentHealth<= 0) {
                 enemyDefeat(targetAt)
             }
         }
@@ -584,9 +648,9 @@ class MobileObject extends GameObject {
             this.yPos += gridSize
             console.log(`new y: ${this.yPos}`)
         } else if (isCollision(this.xPos, this.yPos + gridSize) && this.enemyType === targetAt.characterType) {
-            targetAt.baseHealth = this.meleeAttack(targetAt)
-            console.log(targetAt.baseHealth)
-            if (targetAt.characterType === 'ENEMY' && targetAt.baseHealth <= 0) {
+            targetAt.currentHealth= this.meleeAttack(targetAt)
+            console.log(targetAt.currentHealth)
+            if (targetAt.characterType === 'ENEMY' && targetAt.currentHealth<= 0) {
                 enemyDefeat(targetAt)
             }
         }
@@ -598,9 +662,9 @@ class MobileObject extends GameObject {
             this.yPos += gridSize
             this.xPos -= gridSize
         } else if (isCollision(this.xPos - gridSize, this.yPos + gridSize) && this.enemyType === targetAt.characterType) {
-            targetAt.baseHealth = this.meleeAttack(targetAt)
-            console.log(targetAt.baseHealth)
-            if (targetAt.characterType === 'ENEMY' && targetAt.baseHealth <= 0) {
+            targetAt.currentHealth= this.meleeAttack(targetAt)
+            console.log(targetAt.currentHealth)
+            if (targetAt.characterType === 'ENEMY' && targetAt.currentHealth<= 0) {
                 enemyDefeat(targetAt)
             }
         // console.log('down-left')
@@ -611,9 +675,9 @@ class MobileObject extends GameObject {
         if (!isCollision(this.xPos - gridSize, this.yPos) && this.xPos > tileCenter) {
             this.xPos -= gridSize
         } else if (isCollision(this.xPos - gridSize, this.yPos) && this.enemyType === targetAt.characterType) {
-            targetAt.baseHealth = this.meleeAttack(targetAt)
-            console.log(targetAt.baseHealth)
-            if (targetAt.characterType === 'ENEMY' && targetAt.baseHealth <= 0) {
+            targetAt.currentHealth= this.meleeAttack(targetAt)
+            console.log(targetAt.currentHealth)
+            if (targetAt.characterType === 'ENEMY' && targetAt.currentHealth<= 0) {
                 enemyDefeat(targetAt)
             }
         }
@@ -625,9 +689,9 @@ class MobileObject extends GameObject {
             this.yPos -= gridSize
             this.xPos -= gridSize
         } else if (isCollision(this.xPos - gridSize, this.yPos - gridSize) && this.enemyType === targetAt.characterType) {
-            targetAt.baseHealth = this.meleeAttack(targetAt)
-            console.log(targetAt.baseHealth)
-            if (targetAt.characterType === 'ENEMY' && targetAt.baseHealth <= 0) {
+            targetAt.currentHealth= this.meleeAttack(targetAt)
+            console.log(targetAt.currentHealth)
+            if (targetAt.characterType === 'ENEMY' && targetAt.currentHealth<= 0) {
                 enemyDefeat(targetAt)
             }
         }
@@ -636,12 +700,12 @@ class MobileObject extends GameObject {
 
 // the player character inherits the MOB's traits, and adds its own (specifically move and other action methods)
 class PlayerCharacter extends MobileObject {
-    constructor (uid, actorListArrayPos, gridPos, characterType, baseAttack, canvas, ctx, width, height, xPos, yPos) {
-        super(uid, actorListArrayPos, gridPos, characterType, baseAttack, canvas, ctx, width, height, xPos, yPos)
+    constructor (uid, actorListArrayPos, gridPos, characterType, physAttack, canvas, ctx, width, height, xPos, yPos) {
+        super(uid, actorListArrayPos, gridPos, characterType, physAttack, canvas, ctx, width, height, xPos, yPos)
         this.characterType = 'PC'
         this.enemyType = 'ENEMY'
         this.displayColor = 'skyBlue'
-        this.baseAttack = 50
+        this.physAttack = 50
         this.level = 1
     }
 
@@ -658,15 +722,14 @@ class PlayerCharacter extends MobileObject {
     }
 
     endTurn = function() {
-        turn++
         this.ctx.clearRect(0, 0, this.width, this.height)
         this.mapDraw()
         actorList.splice(0, 1, playerCharacter)
         setTimeout(() => {
             actorList[0].render()
-        }, 500)
+        }, 100)
         
-        // console.log(actorList[0].baseHealth)
+        // console.log(actorList[0].currentHealth)
         for (let i = 1; i < actorList.length; i++) {
             let enemy = actorList[i]
             enemy.actorListArrayPos = i
@@ -675,6 +738,7 @@ class PlayerCharacter extends MobileObject {
             enemy.render('hotPink')
         }
         console.log(actorList)
+        baseUI.update(this.currentHealth, this.maxHealth)
 
     }
 
@@ -732,7 +796,7 @@ class EnemyCharacter extends MobileObject {
         this.ctx.fillText(`${this.actorListArrayPos}`, this.xPos, this.yPos + 8)
     }
     // attackHandler = function() {
-    //     //we're just going with melee and baseAttack for now
+    //     //we're just going with melee and physAttack for now
 
     // }
     movementHandler = function() {
@@ -776,7 +840,7 @@ class EnemyCharacter extends MobileObject {
         if (Math.abs(this.xPos - actorList[0].xPos) <= gridSize && Math.abs(this.yPos - actorList[0].yPos) <= gridSize) {
             console.log(`ATTACK!`)
             //attack the enemy
-            actorList[0].baseHealth = this.meleeAttack(actorList[0])
+            actorList[0].currentHealth= this.meleeAttack(actorList[0])
         } else {
             //else move towards the pc
             this.movementHandler()
@@ -864,21 +928,7 @@ document.addEventListener('keypress', (e) => {
     playerCharacter.movementHandler(e.keyCode)
 })
 
-const initializeGame = () => {
-    gameUI()
-    // hmmm...now the game can't figure out canvas? because it doesn't exist
-    const floorOne = new GameWorld()
-    floorOne.mapDraw()
 
-    playerCharacter = new PlayerCharacter(`pc0`, 0, floorOne.pcSpawnCoordinates())
-    playerCharacter.render()
-    actorList.push(playerCharacter)
-    floorOne.enemySpawn(5)
-}
-
-// *********** UI STUFF ***********
-
-// we'll need this a lot, like a lot a lot
 
 
 document.addEventListener('DOMContentLoaded', splashScreen)
