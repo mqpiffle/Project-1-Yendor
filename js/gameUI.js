@@ -7,7 +7,8 @@ const body = document.getElementById('body')
 // maybe using a class for game UI will work??
 
 class GameUI {
-    constructor() {
+    constructor(characterClass) {
+        this.characterClass = characterClass
         this.pc = actorList[0]
         this.turn = 0
         this.turnDisplay = null
@@ -77,7 +78,7 @@ class GameUI {
         gameXpToNextLevelBar.id = 'game-top-xp-to-next-level-bar'
         gameXpToNextLevelBar.className = 'UI-game-track-level-bar'
         const gameTopAltInfoContainer = document.createElement('div')
-        gameTopAltInfoContainer.id = 'game-top-turn-info-container'
+        gameTopAltInfoContainer.id = 'game-top-alt-info-container'
         gameTopAltInfoContainer.className = 'UI-game-element'
         const gameTopTurnCounter = document.createElement('div')
         gameTopTurnCounter.className = 'UI-game-sub-element'
@@ -89,6 +90,26 @@ class GameUI {
         gameTopTurnCounterText.id = 'game-top-turn-counter-text'
         gameTopTurnCounterText.className = 'UI-game-display-text'
         gameTopTurnCounterText.textContent = `${this.turn}`
+
+        const gameCurrentWeapon = document.createElement('div')
+        gameCurrentWeapon.id = 'game-current-weapon'
+        // gameCurrentWeapon.className = 'UI-game-sub-element'
+        const gameCurrentWeaponTextContainer = document.createElement('div')
+        gameCurrentWeaponTextContainer.id = 'game-current-weapon-text-container'
+        // gameCurrentWeaponTextContainer.className = 'UI-game-sub-element'
+        const gameCurrentWeaponLabel = document.createElement('p')
+        gameCurrentWeaponLabel.id = 'game-current-weapon-label'
+        gameCurrentWeaponLabel.className = 'UI-game-display-label'
+        gameCurrentWeaponLabel.innerText = 'Current Weapon:'
+        const gameCurrentWeaponText = document.createElement('h3')   
+        gameCurrentWeaponText.id = 'game-current-weapon-text'
+        gameCurrentWeaponText.className = 'UI-game-display-text-smol'
+        gameCurrentWeaponText.innerText = `${this.characterClass.weapon.displayTitle}`
+        const gameCurrentWeaponImage = document.createElement('img')
+        gameCurrentWeaponImage.id = 'game-current-weapon-image'
+        gameCurrentWeaponImage.src = '../images/sword_and_shield_rusty_1.png'
+        gameCurrentWeaponImage.height = '32'
+        gameCurrentWeaponImage.width = '32'
 
         gameTop.innerHTML = ''
         gameTop.appendChild(gameTopCharInfoContainer)
@@ -112,6 +133,12 @@ class GameUI {
         gameTopAltInfoContainer.appendChild(gameTopTurnCounter)
         gameTopTurnCounter.appendChild(gameTopTurnCounterLabel)
         gameTopTurnCounter.appendChild(gameTopTurnCounterText)
+        
+        gameTopAltInfoContainer.appendChild(gameCurrentWeapon)
+        gameCurrentWeapon.appendChild(gameCurrentWeaponTextContainer)
+        gameCurrentWeaponTextContainer.appendChild(gameCurrentWeaponLabel)
+        gameCurrentWeaponTextContainer.appendChild(gameCurrentWeaponText)
+        gameCurrentWeapon.appendChild(gameCurrentWeaponImage)
 
         this.turnDisplay = gameTopTurnCounterText
 
@@ -126,27 +153,58 @@ class GameUI {
         const gameBottomSkillsContainer = document.createElement('div')
         gameBottomSkillsContainer.id = 'game-bottom-skills-container'
         gameBottomSkillsContainer.className = 'UI-game-element'
-        const gameCurrentWeapon = document.createElement('div')
-        gameCurrentWeapon.id = 'game-current-weapon'
-        gameCurrentWeapon.className = 'game-skill-button'
-        const gameSkill1 = document.createElement('div')
-        gameSkill1.id = 'game-skill-1'
-        gameSkill1.className = 'game-skill-button'
-        const gameSkill2 = document.createElement('div')
-        gameSkill2.id = 'game-skill-2'
-        gameSkill2.className = 'game-skill-button'
-        const gameSkill3 = document.createElement('div')
-        gameSkill3.id = 'game-skill-3'
-        gameSkill3.className = 'game-skill-button'
+        // skills need to be displayed based on the weapon picked up
+        // ie playerCharacter.weapon.skills[0]
+        const gameSkillContainer1 = document.createElement('div')
+        gameSkillContainer1.id = 'game-skill-container-1'
+        gameSkillContainer1.className = 'UI-game-sub-element'
+        gameSkillContainer1.classList.add('skill-container')
+        const gameSkillText1 = document.createElement('p')
+        gameSkillText1.className = 'game-skill-text'
+        gameSkillText1.innerText = `${this.characterClass.weapon.skills[0].name}`
+        const gameSkillImage1 = document.createElement('img')
+        gameSkillImage1.src = `${this.characterClass.weapon.skills[0].icon}`
+        gameSkillImage1.width = '64'
+        gameSkillImage1.height = '64'
+        const gameSkillContainer2 = document.createElement('div')
+        gameSkillContainer2.id = 'game-skill-container-2'
+        gameSkillContainer2.className = 'UI-game-sub-element'
+        const gameSkillText2 = document.createElement('p')
+        gameSkillText2.className = 'game-skill-text'
+        gameSkillText2.innerText = `${this.characterClass.weapon.skills[1].name}`
+        const gameSkillImage2 = document.createElement('img')
+        gameSkillImage2.src = `${this.characterClass.weapon.skills[1].icon}`
+        gameSkillImage2.width = '64'
+        gameSkillImage2.height = '64'
+        const gameSkillContainer3 = document.createElement('div')
+        gameSkillContainer3.id = 'game-skill-container-3'
+        gameSkillContainer3.className = 'UI-game-sub-element'
+        const gameSkillText3 = document.createElement('p')
+        gameSkillText3.className = 'game-skill-text'
+        gameSkillText3.innerText = `${this.characterClass.weapon.skills[2].name}`
+        const gameSkillImage3 = document.createElement('img')
+        gameSkillImage3.src = `${this.characterClass.weapon.skills[2].icon}`
+        gameSkillImage3.width = '64'
+        gameSkillImage3.height = '64'
+
         const gameBottomOutputLog = document.createElement('div')
         gameBottomOutputLog.id = 'game-bottom-output-log'
 
         gameBottom.innerHTML = ''
         gameBottom.appendChild(gameBottomSkillsContainer)
-        gameBottomSkillsContainer.appendChild(gameCurrentWeapon)
-        gameBottomSkillsContainer.appendChild(gameSkill1)
-        gameBottomSkillsContainer.appendChild(gameSkill2)
-        gameBottomSkillsContainer.appendChild(gameSkill3)
+        
+        gameBottomSkillsContainer.appendChild(gameSkillContainer1)
+        gameSkillContainer1.appendChild(gameSkillText1)
+        gameSkillContainer1.appendChild(gameSkillImage1)
+        gameBottomSkillsContainer.appendChild(gameSkillContainer2)
+        gameSkillContainer2.appendChild(gameSkillText2)
+        gameSkillContainer2.appendChild(gameSkillImage2)
+        gameBottomSkillsContainer.appendChild(gameSkillContainer3)
+        gameSkillContainer3.appendChild(gameSkillText3)
+        gameSkillContainer3.appendChild(gameSkillImage3)
+
+
+
         gameBottom.appendChild(gameBottomOutputLog)
 
         return gameBottom
@@ -176,7 +234,7 @@ class GameUI {
         gameCanvas.width = '960'
         gameCanvas.height = '960'
 
-        
+        // need code in here to dynamically initialize the ui based on character
 
         body.innerHTML = ''
         body.appendChild(gameContainer)

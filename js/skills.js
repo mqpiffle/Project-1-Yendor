@@ -1,23 +1,24 @@
 // *********** WARRIOR SkillS ***********
 // probably shouls be class
 class Skill {
-    constructor(name, decription, rangeModifer, duration, areaOfEffectType, physDamageModifier, magDamageModifier, physResistModifier, magResistModifier, icon, effect) {
-        this.name = ''
-        this.description = ''
+    constructor(name, description, targetType, rangeModifier, duration, areaOfEffectType, physDamageModifier, magDamageModifier, physResistModifier, magResistModifier, cooldown, icon, effect) {
+        this.name = name
+        this.description = description
         // targetType must be 'SELF', 'ENEMY', or 'ANY'
-        this.targetType = ''
-        this.rangeModifer = 1
-        this.duration = 0
+        this.targetType = targetType
+        this.rangeModifer = rangeModifier
+        this.duration = duration
         // AoE this needs to be a function.
         // maybe start with three or four different types of AoE, ie:
         // single-target, 'cleave' - target tile plus two adjacent, 'burst
-        this.areaOfEffectType = null 
-        this.physDamageModifier = 0
-        this.magDamageModifier = 0
-        this.physResistModifier = 0
-        this.magResistModifier = 0
-        this.icon = ''
-        this.effect = ''
+        this.areaOfEffectType = areaOfEffectType 
+        this.physDamageModifier = physDamageModifier
+        this.magDamageModifier = magDamageModifier
+        this.physResistModifier = physResistModifier
+        this.magResistModifier = magResistModifier
+        this.cooldown = cooldown
+        this.icon = icon
+        this.effect = effect
     }
 
     aoeSingleTarget = function(target) {
@@ -40,9 +41,9 @@ class Skill {
     }
 }
 
-const warAutoAttack = new Skill(
-    'Basic Attack',
-    "Stick 'em, with that corroded blade.",
+const warTetanusStrike = new Skill(
+    'Tetanus Strike',
+    "A weak attack which deals a small amount of damage over time.",
     'ENEMY',
     1,
     0,
@@ -51,12 +52,13 @@ const warAutoAttack = new Skill(
     0,
     0,
     0,
-    '',
+    0,
+    '../images/skills/sword_and_shield_tetanus_strike_1.png',
     ''
 )
 
-const warCleaveAttack = new Skill(
-    'Cleave Attack',
+const warRustySlash = new Skill(
+    'Rusty Slash',
     'A strong attack the target plus any enemies in tile asjaent to both the target enemy and yourself.',
     'ENEMY',
     1,
@@ -66,12 +68,13 @@ const warCleaveAttack = new Skill(
     0,
     0,
     0,
-    '',
+    0,
+    '../images/skills/sword_and_shield_rusty_slash_1.png',
     ''
 )
 
-const warHunker = new Skill(
-    'Hunker',
+const warWeakBlock = new Skill(
+    'Weak Block',
     'Raise your shield to gain physical resistance for 3 turns.',
     'SELF',
     0,
@@ -81,6 +84,7 @@ const warHunker = new Skill(
     0,
     0,
     0,
-    '',
+    0,
+    '../images/skills/sword_and_shield_weak_block_1.png',
     ''
 )

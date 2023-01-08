@@ -7,13 +7,6 @@ let baseUI
 
 // these can probably go in classes? idk
 
-const enemySpawn = (numberToSpawn) => {
-    for (let i = 1; i <= numberToSpawn; i++) {
-        let enemy = new EnemyCharacter(`enemy${[i]}`, i, enemySpawnCoordinates())
-        actorList.push(enemy)
-        enemy.render('hotPink')
-    }
-}
 
 const isCollision = (targetTileX, targetTileY) => {
     let collisionDetected = false
@@ -252,24 +245,22 @@ class MobileObject extends GameObject {
 
 // the player character inherits the MOB's traits, and adds its own (specifically move and other action methods)
 class PlayerCharacter extends MobileObject {
-    constructor (uid, actorListArrayPos, gridPos, characterType, physAttack, magAttack, canvas, ctx, width, height, xPos, yPos) {
-        super(uid, actorListArrayPos, gridPos, characterType, physAttack, magAttack, canvas, ctx, width, height, xPos, yPos)
-        this.class = localStorage.getItem('charClass')
-        this.classObj = function() {
-            if (this.class === 'Warrior') {
-                return Warrior
-            } else if (this.class === 'Huntress') {
-                return Huntress
-            } else if (this.class === 'Wizard') {
-                return Wizard
-            }
-        }
+    constructor (uid, charClass, actorListArrayPos, gridPos, characterType, physAttack, magAttack, canvas, ctx, width, height, xPos, yPos) {
+        super(uid, charClass, actorListArrayPos, gridPos, characterType, physAttack, magAttack, canvas, ctx, width, height, xPos, yPos)
+        this.uid = uid
+        this.charClass = charClass
+        this.actorListArrayPos = actorListArrayPos
+        this.gridPos = gridPos
+        this.xPos = this.gridPos[0]
+        this.yPos = this.gridPos[1]
+        this.gridX = this.xPos / gridSize + tileCenter
+        this.gridY = this.yPos / gridSize + tileCenter
+        this.weapon = this.charClass.weapon
         this.characterType = 'PC'
         this.enemyType = 'ENEMY'
         this.displayColor = 'skyBlue'
         this.level = 1
-        this.physAttack = this.classObj().physAttack
-        this.sprite = this.classObj().sprite
+        this.physAttack = this.charClass.physAttack
     }
 
     render = function () {
@@ -277,7 +268,8 @@ class PlayerCharacter extends MobileObject {
         pcSprite.onload = () => {
             this.ctx.drawImage(pcSprite, this.xPos - tileCenter, this.yPos - tileCenter, gridSize, gridSize)
         }
-        pcSprite.src = this.sprite
+        pcSprite.src = '../images/DoY_warrior_1.png' || this.charClass.sprite
+        console.log(`pc sprite: ${this.charClass.sprite}`)
         // this.ctx.beginPath()
         // this.ctx.arc(this.xPos, this.yPos, gridSize / 3, 0, 2.0 * Math.PI)
         // this.ctx.fillStyle = this.displayColor
@@ -437,7 +429,7 @@ class GameWorld extends GameObject {
         }
         
         coordinates = [rndX * gridSize + tileCenter, rndY * gridSize + tileCenter]
-        // console.log(`pc coordinates ${coordinates}`)
+        console.log(`pc coordinates ${coordinates}`)
         return coordinates
     }
 
@@ -450,18 +442,22 @@ class GameWorld extends GameObject {
         const pcCoords = pcCoordsRaw.map(coord => (coord - tileCenter) / gridSize)
         // console.log(`normailzed pc coordinates ${pcCoords}`)
         //random X and Y, bound by the visible grid
+        console.log(`pc coords: ${pcCoords}`)
+
         let rndX = Math.floor(Math.random() * (this.width / gridSize))
-        // console.log(`initial enemy x: ${rndX}`)
         let rndY = Math.floor(Math.random() * (this.height / gridSize))
-        // console.log(`initial enemy y: ${rndY}`)
+        console.log(`initial enemy coords: ${rndX},${rndY}`)
         let coordinates = []
         while (!coordinateTest) {
+            let filteredList = actorList.filter(actor => actor.xPos == rndX && actor.yPos === rndY)
             // if the difference between either (X/Y) of pc and enemy is less than 5 OR
             // if the coordinates already exist in the occupied tiles grid
-            if ((Math.abs(pcCoords[0] - rndX) < 5 && Math.abs(pcCoords[1] - rndY) < 5) && (playerCharacter.xPos === rndX && playerCharacter.yPos === rndY)) {
+            if ((Math.abs(pcCoords[0] - rndX) < 5 && Math.abs(pcCoords[1] - rndY) < 5) && filteredList) {
                 //rerollX
                 rndX = Math.floor(Math.random() * (this.width / gridSize))
                 rndY = Math.floor(Math.random() * (this.height / gridSize))
+                console.log(`re-rolling!: ${rndX},${rndY}`)
+
             } else {
                 // we are good to go!
                 coordinateTest = true
@@ -470,7 +466,7 @@ class GameWorld extends GameObject {
         //the re-un-normalized coordinates
         coordinates = [rndX * gridSize + tileCenter, rndY * gridSize + tileCenter]
 
-        // console.log(`enemy coordinates ${coordinates}`)
+        // console.log(`enemy coordinates: ${coordinates}`)
         //add these coords to an array for future testing
         // console.log(`enemy occupied tiles array: ${occupiedTiles}`)
         //gimme
@@ -513,8 +509,10 @@ document.addEventListener('DOMContentLoaded', splashScreen)
 // *) figure out how to deal damage to specific enemy being targetted <<<-----
 // *) enemy needs to attack @ 1 range
 // *) start filling out the ui
-// 1) style the UI elements -- in progress
-// 2) Add character name and character class selection to local storage to be used in-game
+// *) style the UI elements -- in progress
+// *) Add character name and character class selection to local storage to be used in-game
+// 1) connect skills->weapons->character
+// 2) give user the ability to choose a skill to use, and execute the skill
 // 3) give the charcter a weapon. have the enemies drop weapons on defeat
 // 4) refactor the friggin move functions - should be able to do it with ONE function (cries)
 

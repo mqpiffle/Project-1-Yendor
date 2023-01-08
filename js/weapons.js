@@ -1,4 +1,5 @@
 // *********** WARRIOR WEAPONS ***********
+// I will want to make this into a class for state control maybe??
 
 const wpnWarrior1 = {
     displayTitle: 'Rusty Sword and Shield',
@@ -9,11 +10,11 @@ const wpnWarrior1 = {
     physResistModifier: 3,
     magResistModifier: 0,
     skills: [
-        warAutoAttack,
-        warCleaveAttack,
-        warHunker
+        warTetanusStrike,
+        warRustySlash,
+        warWeakBlock
     ],
-    icon: ''
+    icon: '..images/sword_and_shield_rusty_1.png'
 }
 const wpnWarrior2 = {
     displayTitle: 'Steel Short Sword and Buckler',

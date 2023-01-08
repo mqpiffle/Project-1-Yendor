@@ -1,6 +1,7 @@
 // *********** CHARACTER CLASS DEFINITIONS ***********
 
 const Warrior = {
+    name: 'Warrior',
     weapon: wpnWarrior1,
     maxHealthModifier: 20,
     maxEnergyModifier: 0,
@@ -12,6 +13,7 @@ const Warrior = {
 }
 
 const Huntress = {
+    name: 'Huntress',
     weapon: wpnWarrior1,
     maxHealthModifier: 0,
     maxEnergyModifier: 0,
@@ -23,6 +25,7 @@ const Huntress = {
 }
 
 const Wizard = {
+    name: 'Wizard',
     weapon: wpnWarrior1,
     maxHealthModifier: -10,
     maxEnergyModifier: 0,
