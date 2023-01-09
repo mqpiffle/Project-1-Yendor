@@ -43,6 +43,8 @@ class GameObject {
     constructor () {
         this.canvas = document.getElementById('primary-canvas')
         this.ctx = this.canvas.getContext('2d')
+        this.canvas2 = document.getElementById('secondary-canvas')
+        this.ctx2 = this.canvas2.getContext('2d')
         this.width = this.canvas.width
         this.height = this.canvas.height
     }
@@ -89,14 +91,16 @@ class MobileObject extends GameObject {
         this.magResist = 0
         // this.targUp = [this.xPos, this.yPos - gridSize]
         // this.boundUp = this.yPos > tileCenter
+        // this.deltaUp = function() {
+        //     console.log(`move up`)
+            
+        //     this.yPos -= gridSize
+        //     return this.yPos
+        // }
     }
     
     // this deltaUp is causing the issue!!
-    // deltaUp = function() {
-    //     console.log(`y: ${this.yPos}`)
-    //     this.yPos -= gridSize
-    //     return this.yPos
-    // }
+    
 
     // deltaDown = function() {
     //     return this.yPos += gridSize
@@ -112,11 +116,13 @@ class MobileObject extends GameObject {
 
     // ***I feel like these can be refactored into one 'move' function, maybe later***
     // move = function(targPos, boundCheck, moveDir1, moveDir2) {
+    //     console.log(gridSize)
+    //     console.log(`target position: ${targPos}, boundary check: ${boundCheck}, move direction: ${moveDir1()}`)
     //     const targetAt = actorAt(targPos[0], targPos[1])
     //     if (!isCollision(targPos[0], targPos[1]) && boundCheck) {
     //         moveDir1()
     //     } else if (isCollision(targPos[0], targPos[1]) && this.enemyType === targetAt.characterType) {
-    //         targetAt.currentHealth= this.meleeAttack(targetAt)
+    //         targetAt.currentHealth= this.attack(targetAt)
     //         console.log(targetAt.currentHealth)
     //         if (targetAt.characterType === 'ENEMY' && targetAt.currentHealth<= 0) {
     //             enemyDefeat(targetAt)
@@ -124,7 +130,12 @@ class MobileObject extends GameObject {
     //     }
     // }
 
-    meleeAttack = function(target)  {
+    useSkill = function(skillToUse) {
+        // itialize the skill
+        skillToUse.init()
+    }
+
+    attack = function(target)  {
         let defenderHealth = target.currentHealth
         const incomingDamage = this.physAttack - (this.physAttack * target.physResist) + this.magAttack - (this.magAttack * target.magResist)
         defenderHealth = defenderHealth - incomingDamage
@@ -137,7 +148,7 @@ class MobileObject extends GameObject {
         if (!isCollision(this.xPos, this.yPos - gridSize) && this.yPos > tileCenter) {
             this.yPos -= gridSize
         } else if (isCollision(this.xPos, this.yPos - gridSize) && this.enemyType === targetAt.characterType) {
-            targetAt.currentHealth= this.meleeAttack(targetAt)
+            targetAt.currentHealth= this.attack(targetAt)
             console.log(targetAt.currentHealth)
             if (targetAt.characterType === 'ENEMY' && targetAt.currentHealth<= 0) {
                 enemyDefeat(targetAt)
@@ -151,7 +162,7 @@ class MobileObject extends GameObject {
             this.yPos -= gridSize
             this.xPos += gridSize
         } else if (isCollision(this.xPos + gridSize, this.yPos - gridSize) && this.enemyType === targetAt.characterType) {
-            targetAt.currentHealth= this.meleeAttack(targetAt)
+            targetAt.currentHealth= this.attack(targetAt)
             console.log(targetAt.currentHealth)
             if (targetAt.characterType === 'ENEMY' && targetAt.currentHealth<= 0) {
                 enemyDefeat(targetAt)
@@ -164,7 +175,7 @@ class MobileObject extends GameObject {
         if (!isCollision(this.xPos + gridSize, this.yPos) && this.xPos < this.width - tileCenter) {
             this.xPos += gridSize
         } else if (isCollision(this.xPos + gridSize, this.yPos) && this.enemyType === targetAt.characterType) {
-            targetAt.currentHealth= this.meleeAttack(targetAt)
+            targetAt.currentHealth= this.attack(targetAt)
             console.log(targetAt.currentHealth)
             if (targetAt.characterType === 'ENEMY' && targetAt.currentHealth<= 0) {
                 enemyDefeat(targetAt)
@@ -178,7 +189,7 @@ class MobileObject extends GameObject {
         this.yPos += gridSize
         this.xPos += gridSize
         } else if (isCollision(this.xPos + gridSize, this.yPos + gridSize) && this.enemyType === targetAt.characterType) {
-            targetAt.currentHealth= this.meleeAttack(targetAt)
+            targetAt.currentHealth= this.attack(targetAt)
             console.log(targetAt.currentHealth)
             if (targetAt.characterType === 'ENEMY' && targetAt.currentHealth<= 0) {
                 enemyDefeat(targetAt)
@@ -187,13 +198,11 @@ class MobileObject extends GameObject {
         // console.log('down-right')
     }
     moveDown = function() {
-        console.log(`y: ${this.yPos}`)
         const targetAt = actorAt(this.xPos, this.yPos + gridSize)
         if (!isCollision(this.xPos, this.yPos + gridSize) && this.yPos < this.height - tileCenter) {
             this.yPos += gridSize
-            console.log(`new y: ${this.yPos}`)
         } else if (isCollision(this.xPos, this.yPos + gridSize) && this.enemyType === targetAt.characterType) {
-            targetAt.currentHealth= this.meleeAttack(targetAt)
+            targetAt.currentHealth= this.attack(targetAt)
             console.log(targetAt.currentHealth)
             if (targetAt.characterType === 'ENEMY' && targetAt.currentHealth<= 0) {
                 enemyDefeat(targetAt)
@@ -207,7 +216,7 @@ class MobileObject extends GameObject {
             this.yPos += gridSize
             this.xPos -= gridSize
         } else if (isCollision(this.xPos - gridSize, this.yPos + gridSize) && this.enemyType === targetAt.characterType) {
-            targetAt.currentHealth= this.meleeAttack(targetAt)
+            targetAt.currentHealth= this.attack(targetAt)
             console.log(targetAt.currentHealth)
             if (targetAt.characterType === 'ENEMY' && targetAt.currentHealth<= 0) {
                 enemyDefeat(targetAt)
@@ -220,7 +229,7 @@ class MobileObject extends GameObject {
         if (!isCollision(this.xPos - gridSize, this.yPos) && this.xPos > tileCenter) {
             this.xPos -= gridSize
         } else if (isCollision(this.xPos - gridSize, this.yPos) && this.enemyType === targetAt.characterType) {
-            targetAt.currentHealth= this.meleeAttack(targetAt)
+            targetAt.currentHealth= this.attack(targetAt)
             console.log(targetAt.currentHealth)
             if (targetAt.characterType === 'ENEMY' && targetAt.currentHealth<= 0) {
                 enemyDefeat(targetAt)
@@ -234,7 +243,7 @@ class MobileObject extends GameObject {
             this.yPos -= gridSize
             this.xPos -= gridSize
         } else if (isCollision(this.xPos - gridSize, this.yPos - gridSize) && this.enemyType === targetAt.characterType) {
-            targetAt.currentHealth= this.meleeAttack(targetAt)
+            targetAt.currentHealth= this.attack(targetAt)
             console.log(targetAt.currentHealth)
             if (targetAt.characterType === 'ENEMY' && targetAt.currentHealth<= 0) {
                 enemyDefeat(targetAt)
@@ -292,41 +301,59 @@ class PlayerCharacter extends MobileObject {
             actorList.splice(enemy.actorListArrayPos, 1, enemy)
             enemy.render('hotPink')
         }
-        console.log(actorList)
         baseUI.update(this.currentHealth, this.maxHealth)
-
+        this.ctx.save()
     }
 
     
-    movementHandler = function(key) {
-        // we'll use the numPad for movement and explicitly define the diagonals
-        if (key === 56) {
-            this.moveUp()
+    pcActionHandler = function(key) {
+        // SKILLS -- keys 1,2,3
+        if (key === 'Digit1') {
+            this.useSkill(this.charClass.weapon.skills[0])
             // this.move(this.targUp, this.boundUp, this.deltaUp)
             // console.log(`x: ${this.xPos}, y: ${this.yPos}`)
         }
-        if (key === 57) {
-            this.moveUpRight()
+        if (key === 'Digit2') {
+            this.useSkill(this.charClass.weapon.skills[1])
         }
-        if (key === 54) {            
-            this.moveRight()
+        if (key === 'Digit3') {            
+            this.useSkill(this.charClass.weapon.skills[2])
         }
-        if (key === 51) {
-            this.moveDownRight()
-        }
-        if (key === 50) {
-            this.moveDown()
-        }
-        if (key === 49) {
-            this.moveDownLeft()
-        }
-        if (key === 52) {
-            this.moveLeft()
-        }
-        if (key === 55) {
-            this.moveUpLeft()
-        }
+        // MOVES -- we'll use the numPad for movement and explicitly define the diagonals
+        if (key === 'Numpad8') {
+            this.moveUp()
+            // this.move(this.targUp, this.boundUp, this.deltaUp)
+            // console.log(`x: ${this.xPos}, y: ${this.yPos}`)
         this.endTurn()
+        }
+        if (key === 'Numpad9') {
+            this.moveUpRight()
+            this.endTurn()
+        }
+        if (key === 'Numpad6') {            
+            this.moveRight()
+            this.endTurn()
+        }
+        if (key === 'Numpad3') {
+            this.moveDownRight()
+            this.endTurn()
+        }
+        if (key === 'Numpad2') {
+            this.moveDown()
+            this.endTurn()
+        }
+        if (key === 'Numpad1') {
+            this.moveDownLeft()
+            this.endTurn()
+        }
+        if (key === 'Numpad4') {
+            this.moveLeft()
+            this.endTurn()
+        }
+        if (key === 'Numpad7') {
+            this.moveUpLeft()
+            this.endTurn()
+        }
     }
 }
 // class PlayerClass extends PlayerCharacter {
@@ -337,8 +364,8 @@ class PlayerCharacter extends MobileObject {
 // }
 
 class EnemyCharacter extends MobileObject {
-    constructor(uid, actorListArrayPos, gridPos, characterType, physAttack, magAttack, canvas, ctx, width, height, xPos, yPos) {
-        super(uid, actorListArrayPos, gridPos, characterType, physAttack, magAttack, canvas, ctx, width, height, xPos, yPos)
+    constructor(uid, actorListArrayPos, gridPos, characterType, physAttack, magAttack, canvas, ctx, width, height, xPos, yPos, currentHealth) {
+        super(uid, actorListArrayPos, gridPos, characterType, physAttack, magAttack, canvas, ctx, width, height, xPos, yPos, currentHealth)
         this.uid = uid
         this.characterType = 'ENEMY'
         this.enemyType = 'PC'
@@ -395,7 +422,7 @@ class EnemyCharacter extends MobileObject {
         if (Math.abs(this.xPos - actorList[0].xPos) <= gridSize && Math.abs(this.yPos - actorList[0].yPos) <= gridSize) {
             console.log(`ATTACK!`)
             //attack the enemy
-            actorList[0].currentHealth = this.meleeAttack(actorList[0])
+            actorList[0].currentHealth = this.attack(actorList[0])
         } else {
             //else move towards the pc
             this.movementHandler()
@@ -484,7 +511,7 @@ class GameWorld extends GameObject {
 
 // since the game is turn-based we can simply use the keypress method and pass that to our movement handler
 document.addEventListener('keypress', (e) => {
-    playerCharacter.movementHandler(e.keyCode)
+    playerCharacter.pcActionHandler(e.code)
 })
 
 

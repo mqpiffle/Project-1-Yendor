@@ -169,6 +169,7 @@ class GameUI {
         const gameSkillContainer2 = document.createElement('div')
         gameSkillContainer2.id = 'game-skill-container-2'
         gameSkillContainer2.className = 'UI-game-sub-element'
+        gameSkillContainer2.classList.add('skill-container')
         const gameSkillText2 = document.createElement('p')
         gameSkillText2.className = 'game-skill-text'
         gameSkillText2.innerText = `${this.characterClass.weapon.skills[1].name}`
@@ -179,6 +180,7 @@ class GameUI {
         const gameSkillContainer3 = document.createElement('div')
         gameSkillContainer3.id = 'game-skill-container-3'
         gameSkillContainer3.className = 'UI-game-sub-element'
+        gameSkillContainer3.classList.add('skill-container')
         const gameSkillText3 = document.createElement('p')
         gameSkillText3.className = 'game-skill-text'
         gameSkillText3.innerText = `${this.characterClass.weapon.skills[2].name}`
@@ -215,7 +217,7 @@ class GameUI {
         this.turn++
         this.turnDisplay.textContent = `${this.turn}`
 
-        console.log(curHlth / maxHlth)
+        // console.log(curHlth / maxHlth)
         
         // health bar update
         const healthBar = document.getElementById('game-top-health-remaining-bar')
@@ -229,17 +231,25 @@ class GameUI {
         // TOP game info element (character info, hp/energy/xp bars)
         
         // CANVAS - where the magic happens
+        const canvasContainer = document.createElement('div')
+        canvasContainer.id = 'canvas-container'
         const gameCanvas = document.createElement('canvas')
         gameCanvas.id = 'primary-canvas'
         gameCanvas.width = '960'
         gameCanvas.height = '960'
+        const gameCanvas2 = document.createElement('canvas')
+        gameCanvas2.id = 'secondary-canvas'
+        gameCanvas2.width = '960'
+        gameCanvas2.height = '960'
 
         // need code in here to dynamically initialize the ui based on character
 
         body.innerHTML = ''
         body.appendChild(gameContainer)
         gameContainer.appendChild(this.topBar())
-        gameContainer.appendChild(gameCanvas)
+        gameContainer.appendChild(canvasContainer)
+        canvasContainer.appendChild(gameCanvas)
+        canvasContainer.appendChild(gameCanvas2)
         gameContainer.appendChild(this.bottomBar())
     }
 }

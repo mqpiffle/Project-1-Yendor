@@ -97,27 +97,40 @@ h1 {
     margin: 1rem auto;
     border: 3px solid var(--neutral-90);
     border-radius: 1rem;
+   
+}
+
+#canvas-container {
+    width: 960px;
+    height: 960px;
+    display: block;
+    position: relative;
 }
 
 #primary-canvas {
-    border: 7px solid var(--primary-clr);
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 
-#game-top-ui {
+#secondary-canvas {
+    background-color: transparent;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+
+#game-top-ui, #game-bottom-ui {
     display: flex;
-    margin-block: 1rem;
+    margin-block: .25rem;
 }   
-
-#game-bottom-ui {
-    display: flex;
-    margin-block: 1rem;
-}
 
 #game-top-char-info-container {
     width: 40%;
     display: grid;
     grid-auto-flow: column;
-    grid-template-columns: 3fr, 2fr, 1fr;
+    padding: .5rem 1rem;
     gap: 1rem;
 }
 
@@ -206,7 +219,7 @@ h1 {
 }
 
 .UI-game-element {
-    padding: 0.5rem 1rem;
+    padding: 0.125rem 1rem;
 }
 
 .UI-game-sub-element {

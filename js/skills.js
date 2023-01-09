@@ -1,12 +1,12 @@
 // *********** WARRIOR SkillS ***********
 // probably shouls be class
 class Skill {
-    constructor(name, description, targetType, rangeModifier, duration, areaOfEffectType, physDamageModifier, magDamageModifier, physResistModifier, magResistModifier, cooldown, icon, effect) {
+    constructor(name, description, targetType, range, duration, areaOfEffectType, physDamageModifier, magDamageModifier, physResistModifier, magResistModifier, cooldown, icon, effect) {
         this.name = name
         this.description = description
         // targetType must be 'SELF', 'ENEMY', or 'ANY'
         this.targetType = targetType
-        this.rangeModifer = rangeModifier
+        this.range = range
         this.duration = duration
         // AoE this needs to be a function.
         // maybe start with three or four different types of AoE, ie:
@@ -19,6 +19,9 @@ class Skill {
         this.cooldown = cooldown
         this.icon = icon
         this.effect = effect
+
+        this.validTargets = []
+        this.selectedTargetIndex = 0
     }
 
     aoeSingleTarget = function(target) {
@@ -39,6 +42,73 @@ class Skill {
         // none of the tiles must be occupied
         console.log(`aoe burst`)
     }
+
+
+    executeSkill = function() {
+        const go = new GameObject
+        // effects to all vaild targets
+        playerCharacter.attack(this.validTargets[this.selectedTargetIndex])
+        // end turn
+        this.validTargets = []
+        go.ctx2.clearRect(0, 0, 960, 960)
+        playerCharacter.endTurn()
+    }
+
+
+    currentlySelectedTile = function(target) {
+        const go = new GameObject
+        go.ctx2.clearRect(0, 0, 960, 960)
+        go.ctx2.strokeStyle = 'green'
+        go.ctx2.shadowColor = 'green'
+        go.ctx2.shadowBlur = 10
+        go.ctx2.lineWidth = 3
+        go.ctx2.strokeRect(target.xPos - tileCenter, target.yPos - tileCenter, gridSize, gridSize)
+
+        // draw a square at the given coordinates
+    }
+
+    getValidTargetsInRange = function(range) {
+        for (let i = 1; i < actorList.length; i++) {
+            if ((Math.abs(actorList[0].xPos - actorList[i].xPos)) <= (range * gridSize) && (Math.abs(actorList[0].yPos - actorList[i].yPos)) <= (range * gridSize)) {
+                this.validTargets.push(actorList[i])
+            }
+        }
+    }
+
+    selectTarget = function(key) {
+        // move through list with 't'
+        if (key === 'KeyT') {
+            if (this.selectedTargetIndex === this.validTargets.length - 1) {
+                this.selectedTargetIndex = 0
+                this.currentlySelectedTile(this.validTargets[this.selectedTargetIndex])
+            } else {
+                this.selectedTargetIndex++
+                this.currentlySelectedTile(this.validTargets[this.selectedTargetIndex])
+            }
+        }
+        if (key === 'Enter') {
+            this.executeSkill()
+        } 
+            // apply effects by hitting 'enter' , or 'esc' to exit skill selection
+    
+            // if target type = 'SELF', immediately initiate effects
+    
+            // initiate effects
+    
+            // clean up valid target array
+    }
+
+    init = function() {
+        this.validTargets = []
+        this.getValidTargetsInRange(this.range)
+        if (this.validTargets.length !== 0) {
+            this.currentlySelectedTile(this.validTargets[this.selectedTargetIndex])
+            this.selectTarget()
+        }
+        document.addEventListener('keypress', (e) => {
+            this.selectTarget(e.code)
+        })
+    }
 }
 
 const warTetanusStrike = new Skill(
@@ -48,7 +118,7 @@ const warTetanusStrike = new Skill(
     1,
     0,
     null,// this.aoeSingleTarget(target),single target
-    0,
+    1,
     0,
     0,
     0,
