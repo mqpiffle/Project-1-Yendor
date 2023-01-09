@@ -14,7 +14,7 @@ const wpnWarrior1 = {
         warRustySlash,
         warWeakBlock
     ],
-    icon: '..images/sword_and_shield_rusty_1.png'
+    icon: '../images/sword_and_shield_rusty_1.png'
 }
 const wpnWarrior2 = {
     displayTitle: 'Steel Short Sword and Buckler',

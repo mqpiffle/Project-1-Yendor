@@ -349,7 +349,7 @@ const characterSelectionScreen = () => {
     enterDungeonButton.innerText = 'Enter Dungeon'
     backButton.innerText = 'Back'
     wizardImage.src = '../images/DoY_wizard_1.png'
-    warriorImage.src = '../images/DoY_warrior_1.png'
+    warriorImage.src = '../images/DoY_warrior_1.png' || 'https://github.com/mqpiffle/Project-1-Yendor/blob/main/images/DoY_warrior_1.png'
     huntressImage.src = '../images/DoY_huntress_1.png'
     wizardButton.value = 'Wizard'
     warriorButton.value = 'Warrior'
