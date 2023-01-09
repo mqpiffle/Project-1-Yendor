@@ -1,7 +1,7 @@
 // *********** GLOBAL STUFF ***********
 const gridSize = 48
 const tileCenter = gridSize / 2
-const actorList = []
+let actorList = []
 let playerCharacter
 let baseUI
 
@@ -34,6 +34,7 @@ const actorAt = (targetTileX, targetTileY) => {
 }
 
 const enemyDefeat = (enemy) => {
+    playerCharacter.xp += enemy.xpValue
     enemy.isAlive = false
     enemy.render('transparent')
     actorList.splice(enemy.actorListArrayPos, 1)
@@ -66,9 +67,12 @@ class GameObject {
         }
     }
     gameOver = function(result) {
+        
         if (result === 'win') {
+            winScreen()
             console.log(`You WIN!!`)
         } else if (result === 'lose') {
+            loseScreen()
             console.log(`WOMP WOMP!`)
         } else {
             return
@@ -91,13 +95,12 @@ class MobileObject extends GameObject {
         this.currentHealth = 120
         this.maxEnergy = 100
         this.currentEnergy = 100
-        this.xpToNextLevel = 100
-        this.currentXp = 0
         this.physAttack = 10
         this.magAttack = 0
         this.attackType = ''
         this.physResist = 0
         this.magResist = 0
+        this.potionCharges = 1
         // this.targUp = [this.xPos, this.yPos - gridSize]
         // this.boundUp = this.yPos > tileCenter
         // this.deltaUp = function() {
@@ -138,9 +141,19 @@ class MobileObject extends GameObject {
     //         }
     //     }
     // }
+    usePotion = function() {
+        if (this.maxHealth - this.currentHealth < 50) {
+            this.currentHealth = this.maxHealth
+        } else {
+            this.currentHealth += 50
+        }
+        console.log(`potion used, current health ${this.currentHealth}/${this.maxHealth}`)
+        this.endTurn()
+    }
 
     useSkill = function(skillToUse) {
         // itialize the skill
+        // nonono -- move the targetting logic here, then fire off the skill on [Enter]!!
         skillToUse.init()
     }
 
@@ -278,6 +291,8 @@ class PlayerCharacter extends MobileObject {
         this.enemyType = 'ENEMY'
         this.displayColor = 'skyBlue'
         this.level = 1
+        this.xp = 0
+        this.xpToNextLevel = 100
         this.physAttack = this.charClass.physAttack
     }
 
@@ -316,7 +331,7 @@ class PlayerCharacter extends MobileObject {
             actorList.splice(enemy.actorListArrayPos, 1, enemy)
             enemy.render('hotPink')
         }
-        baseUI.update(this.currentHealth, this.maxHealth)
+        baseUI.update(this.currentHealth, this.maxHealth, this.xp, this.xpToNextLevel)
         this.ctx.save()
     }
 
@@ -333,6 +348,10 @@ class PlayerCharacter extends MobileObject {
         }
         if (key === 'Digit3') {            
             this.useSkill(this.charClass.weapon.skills[2])
+        }
+        // USE POTION = 'p', heal up to 50 hp
+        if (key === 'KeyP') {     
+            this.usePotion()
         }
         // MOVES -- we'll use the numPad for movement and explicitly define the diagonals
         if (key === 'Numpad8') {
@@ -383,7 +402,8 @@ class EnemyCharacter extends MobileObject {
         super(uid, actorListArrayPos, gridPos, characterType, physAttack, magAttack, canvas, ctx, width, height, xPos, yPos, currentHealth)
         this.uid = uid
         this.characterType = 'ENEMY'
-        this.enemyType = 'PC'
+        this.enemyType = 'GOBLIN'
+        this.xpValue = 25
     }
     render = function (displayColor) {
         this.ctx.font = '24px sans-serif'

@@ -213,7 +213,7 @@ class GameUI {
     }
 
 
-    update = function(curHlth, maxHlth) {
+    update = function(curHlth, maxHlth, curXP, thresholdXP) {
         this.turn++
         this.turnDisplay.textContent = `${this.turn}`
 
@@ -221,7 +221,23 @@ class GameUI {
         
         // health bar update
         const healthBar = document.getElementById('game-top-health-remaining-bar')
-        healthBar.style.width = `${(curHlth / maxHlth) * 100}%`
+        const xpBar = document.getElementById('game-top-xp-to-next-level-bar')
+        let remainingHealth = (curHlth / maxHlth) * 100
+        let xpIndicator = (curXP / thresholdXP) * 100
+        if (remainingHealth < 0) {
+            healthBar.style.width = `0%`
+        } else if (remainingHealth > 100){
+            healthBar.style.width = `100%`
+        } else {
+            healthBar.style.width = `${remainingHealth}%`
+        }
+        if (xpIndicator < 0) {
+            xpBar.style.width = `0%`
+        } else if (xpIndicator > 100){
+            xpBar.style.width = `100%`
+        } else {
+            xpBar.style.width = `${xpIndicator}%`
+        }
         // this.topBar()
     }
 
@@ -406,7 +422,7 @@ const instructionsScreen = () => {
     const instructionsText = document.createElement('p')
     instructionsText.id = 'instructions-text'
     instructionsText.className = 'UI-text'
-    instructionsText.innerText = "It is your goal to retrieve the Bauble of Yendor from the not-so-depths of the vile dungeon.  To do so you must destroy Zyxthbuul and his minions. Move by using the NumPad (diagonal moves allowed.)  Skills may be used by pressing numbers [1], [2], or [3] on the keyboard, followed by [t] to select your target then [Enter] to complete the skill or [Esc] to back out and continue your turn.  Fight until either you are defeated, or you have successfully obtained the Bauble.  Good Luck!"
+    instructionsText.innerText = "It is your goal to retrieve the Bauble of Yendor from the not-so-depths of the vile dungeon.  To do so you must destroy Zyxthbuul and his minions. Move by using the NumPad (diagonal moves allowed.)  Skills may be used by pressing numbers [1], [2], or [3] on the keyboard, followed by [t] to select your target then [Enter] to complete the skill or [Esc] to back out and continue your turn.  You start with one healing potion, [p], which will heal up 50 health. Fight until either you are defeated, or you have successfully obtained the Bauble.  Good Luck!"
     const buttonNavDiv = document.createElement('div')
     buttonNavDiv.id = 'instructions-button-nav-container'
     buttonNavDiv.className = 'UI-button-nav-container'
@@ -464,6 +480,10 @@ const aboutScreen = () => {
 }
 
 const splashScreen = () => {
+    actorList = []
+    playerCharacter = null
+    localStorage.clear()
+
     const startSplashDiv = document.createElement('div')
     startSplashDiv.id = 'start-splash'
     startSplashDiv.className = 'UI-base-container'
@@ -501,5 +521,77 @@ const splashScreen = () => {
     instructionsButton.addEventListener('click', instructionsScreen)
     aboutButton.addEventListener('click', aboutScreen)
     startGameButton.addEventListener('click', characterSelectionScreen)
+}
+
+const winScreen = () => {
+    const winScreenContainerDiv = document.createElement('div')
+    winScreenContainerDiv.id = 'win-screen-container'
+    winScreenContainerDiv.className = 'UI-base-container'
+    const winScreenTitleDiv = document.createElement('div')
+    winScreenTitleDiv.id = 'win-screen-title-container'
+    winScreenTitleDiv.className = 'UI-title-container'
+    const title = document.createElement('h1')
+    title.innerText = 'SUCCESS!!!'
+    const winScreenTextDiv = document.createElement('div')
+    winScreenTextDiv.id = 'win-screen-text-container'
+    winScreenTextDiv.className = 'UI-text-container'
+    const winScreenText = document.createElement('p')
+    winScreenText.id = 'about-text'
+    winScreenText.className = 'UI-text'
+    winScreenText.innerText = "You have retrieved the Bauble of YENDOR!! Now return the Bauble to its rightful owners, the Lords of YENDOR!!"
+    const buttonNavDiv = document.createElement('div')
+    buttonNavDiv.id = 'instructions-button-nav-container'
+    buttonNavDiv.className = 'UI-button-nav-container'
+    const backButton = document.createElement('button')
+    backButton.id = 'instructions-back-button'
+    backButton.className = 'button'
+    backButton.innerText = 'I kinda want to keep it...'
+
+    body.innerHTML = ''
+    body.appendChild(winScreenContainerDiv)
+    winScreenContainerDiv.appendChild(winScreenTitleDiv)
+    winScreenTitleDiv.appendChild(title)
+    winScreenContainerDiv.appendChild(winScreenTextDiv)
+    winScreenTextDiv.appendChild(winScreenText)
+    winScreenContainerDiv.appendChild(buttonNavDiv)
+    buttonNavDiv.appendChild(backButton)
+
+    backButton.addEventListener('click', splashScreen)
+}
+
+const loseScreen = () => {
+    const loseScreenContainerDiv = document.createElement('div')
+    loseScreenContainerDiv.id = 'lose-screen-container'
+    loseScreenContainerDiv.className = 'UI-base-container'
+    const loseScreenTitleDiv = document.createElement('div')
+    loseScreenTitleDiv.id = 'lose-screen-title-container'
+    loseScreenTitleDiv.className = 'UI-title-container'
+    const title = document.createElement('h1')
+    title.innerText = 'You have been DEFEATED!'
+    const loseScreenTextDiv = document.createElement('div')
+    loseScreenTextDiv.id = 'lose-screen-text-container'
+    loseScreenTextDiv.className = 'UI-text-container'
+    const loseScreenText = document.createElement('p')
+    loseScreenText.id = 'lose-screen-text'
+    loseScreenText.className = 'UI-text'
+    loseScreenText.innerText = "The dark forces of Zyxthbuul were clearly more than you could handle. Your soul will now be used to strengthen his eldritch horde!"
+    const buttonNavDiv = document.createElement('div')
+    buttonNavDiv.id = 'instructions-button-nav-container'
+    buttonNavDiv.className = 'UI-button-nav-container'
+    const backButton = document.createElement('button')
+    backButton.id = 'instructions-back-button'
+    backButton.className = 'button'
+    backButton.innerText = 'Get me outta here...'
+
+    body.innerHTML = ''
+    body.appendChild(loseScreenContainerDiv)
+    loseScreenContainerDiv.appendChild(loseScreenTitleDiv)
+    loseScreenTitleDiv.appendChild(title)
+    loseScreenContainerDiv.appendChild(loseScreenTextDiv)
+    loseScreenTextDiv.appendChild(loseScreenText)
+    loseScreenContainerDiv.appendChild(buttonNavDiv)
+    buttonNavDiv.appendChild(backButton)
+
+    backButton.addEventListener('click', splashScreen)
 }
 // these function
