@@ -399,20 +399,20 @@ const instructionsScreen = () => {
     instructionsTitleDiv.id = 'instructions-title-container'
     instructionsTitleDiv.className = 'UI-title-container'
     const title = document.createElement('h1')
+    title.innerText = 'Instructions'
     const instructionsTextDiv = document.createElement('div')
     instructionsTextDiv.id = 'instructions-text-container'
     instructionsTextDiv.className = 'UI-text-container'
     const instructionsText = document.createElement('p')
     instructionsText.id = 'instructions-text'
     instructionsText.className = 'UI-text'
+    instructionsText.innerText = "It is your goal to retrieve the Bauble of Yendor from the not-so-depths of the vile dungeon.  To do so you must destroy Zyxthbuul and his minions. Move by using the NumPad (diagonal moves allowed.)  Skills may be used by pressing numbers [1], [2], or [3] on the keyboard, followed by [t] to select your target then [Enter] to complete the skill or [Esc] to back out and continue your turn.  Fight until either you are defeated, or you have successfully obtained the Bauble.  Good Luck!"
     const buttonNavDiv = document.createElement('div')
     buttonNavDiv.id = 'instructions-button-nav-container'
     buttonNavDiv.className = 'UI-button-nav-container'
     const backButton = document.createElement('button')
     backButton.id = 'instructions-back-button'
     backButton.className = 'button'
-
-    title.innerText = 'Instructions'
     backButton.innerText = 'Back'
 
     body.innerHTML = ''
@@ -435,20 +435,20 @@ const aboutScreen = () => {
     aboutTitleDiv.id = 'about-title-container'
     aboutTitleDiv.className = 'UI-title-container'
     const title = document.createElement('h1')
+    title.innerText = 'About'
     const aboutTextDiv = document.createElement('div')
     aboutTextDiv.id = 'about-text-container'
     aboutTextDiv.className = 'UI-text-container'
     const aboutText = document.createElement('p')
     aboutText.id = 'about-text'
     aboutText.className = 'UI-text'
+    aboutText.innerText = "Dungeon of YENDOR draws inspiration from two of my favorite game genres: rougelikes and hack-and-slash ARPGs.  In essence, it's your character's quest to find the Bauble of Yendor, a very ancient magical artifact, which has been heisted by the powerful necromancer Zyxthbuul. The character will delve into a not-so-deep dungeon (3 floors) in hopes of retrieving the Bauble, happily slaying monsters and collecting loot (of course) along the way.  But beware!  Death is most final, and will only lead to starting over until the Bauble is retrieved and returned to the Lords of YENDOR."
     const buttonNavDiv = document.createElement('div')
     buttonNavDiv.id = 'instructions-button-nav-container'
     buttonNavDiv.className = 'UI-button-nav-container'
     const backButton = document.createElement('button')
     backButton.id = 'instructions-back-button'
     backButton.className = 'button'
-
-    title.innerText = 'About'
     backButton.innerText = 'Back'
 
     body.innerHTML = ''

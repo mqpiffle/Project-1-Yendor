@@ -49,7 +49,7 @@ class GameObject {
         this.height = this.canvas.height
     }
 
-    checkerboard = (horiz, vert) => {
+    checkerboard = function(horiz, vert) {
         if (horiz % 2 === 0) {
             return `hsl(0 0% ${30 + (vert % 2) * 2}%`
         } else {
@@ -57,12 +57,21 @@ class GameObject {
         }
     }
 
-    mapDraw = () => {
+    mapDraw = function() {
         for (let i = 0; i < this.width / gridSize; i++) {
             for (let j = 0; j < this.height / gridSize; j++) {
                 this.ctx.fillStyle = this.checkerboard(i, j)
                 this.ctx.fillRect(i * gridSize, j * gridSize, gridSize, gridSize)
             }
+        }
+    }
+    gameOver = function(result) {
+        if (result === 'win') {
+            console.log(`You WIN!!`)
+        } else if (result === 'lose') {
+            console.log(`WOMP WOMP!`)
+        } else {
+            return
         }
     }
 }
@@ -286,6 +295,12 @@ class PlayerCharacter extends MobileObject {
     }
 
     endTurn = function() {
+        if (playerCharacter.currentHealth <= 0) {
+            this.gameOver('lose')
+        } 
+        if (actorList.length === 1) {
+            this.gameOver('win')
+        }
         this.ctx.clearRect(0, 0, this.width, this.height)
         this.mapDraw()
         actorList.splice(0, 1, playerCharacter)
