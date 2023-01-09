@@ -301,7 +301,7 @@ class PlayerCharacter extends MobileObject {
         pcSprite.onload = () => {
             this.ctx.drawImage(pcSprite, this.xPos - tileCenter, this.yPos - tileCenter, gridSize, gridSize)
         }
-        pcSprite.src = '../images/DoY_warrior_1.png' || this.charClass.sprite
+        pcSprite.src = /* '../images/DoY_warrior_1.png' */ 'https://imgur.com/qN08WlD' || this.charClass.sprite
         console.log(`pc sprite: ${this.charClass.sprite}`)
         // this.ctx.beginPath()
         // this.ctx.arc(this.xPos, this.yPos, gridSize / 3, 0, 2.0 * Math.PI)
