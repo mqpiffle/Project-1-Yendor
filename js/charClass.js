@@ -9,7 +9,7 @@ const Warrior = {
     get magAttack()  { return 0 + weapon.magAttackModifier },
     get physResistModifier() { return 50 + this.weapon.physResistModifier },
     get magResistModifier()  { return 10 + weapon.magResistModifier },
-    sprite: '../images/DoY_warrior_1.png'
+    sprite: '../images/DoY_warrior_1.png' || 'https://imgur.com/qN08WlD'
 }
 
 const Huntress = {
@@ -21,7 +21,7 @@ const Huntress = {
     get magAttack()  { return 0 + weapon.magAttackModifier },
     get physResistModifier() { return 35 + this.weapon.physResistModifier },
     get magResistModifier()  { return 35 + weapon.magResistModifier },
-    sprite: '../images/DoY_huntress_1.png'
+    sprite: '../images/DoY_huntress_1.png' || 'https://imgur.com/nFfhiac'
 }
 
 const Wizard = {
@@ -33,5 +33,5 @@ const Wizard = {
     get magAttack()  { return 0 + weapon.magAttackModifier },
     get physResistModifier() { return 20 + this.weapon.physResistModifier },
     get magResistModifier()  { return 160 + weapon.magResistModifier },
-    sprite: '../images/DoY_wizard_1.png'
+    sprite: '../images/DoY_wizard_1.png' || 'https://imgur.com/B08vZeF'
 }
