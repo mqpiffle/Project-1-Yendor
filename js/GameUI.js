@@ -107,7 +107,7 @@ class GameUI {
         gameCurrentWeaponText.innerText = `${this.characterClass.weapon.displayTitle}`
         const gameCurrentWeaponImage = document.createElement('img')
         gameCurrentWeaponImage.id = 'game-current-weapon-image'
-        gameCurrentWeaponImage.src = '../images/sword_and_shield_rusty_1.png' || 'https://imgur.com/FuiFSj6'
+        gameCurrentWeaponImage.src = '../images/sword_and_shield_rusty_1.png'
         gameCurrentWeaponImage.height = '32'
         gameCurrentWeaponImage.width = '32'
 
@@ -348,10 +348,9 @@ const characterSelectionScreen = () => {
     title.innerText = 'Select Character'
     enterDungeonButton.innerText = 'Enter Dungeon'
     backButton.innerText = 'Back'
-    wizardImage.src = /* '../images/DoY_wizard_1.png' || */'https://imgur.com/qN08WlD'
-    warriorImage.src = /* '../images/DoY_warrior_1.png' ||  */'https://imgur.com/nFfhiac'
-    huntressImage.src = /* '../images/DoY_huntress_1.png' || */'https://imgur.com/B08vZeF'
-    wizardButton.value = 'Wizard'
+    wizardImage.src = '../images/DoY_wizard_1.png' 
+    warriorImage.src = '../images/DoY_warrior_1.png' 
+    huntressImage.src = '../images/DoY_huntress_1.png' 
     warriorButton.value = 'Warrior'
     huntressButton.value = 'Huntress'
     wizardButton.type = 'button'
@@ -402,7 +401,7 @@ const characterSelectionScreen = () => {
         let charName = charactersFormInput.value
         localStorage.setItem('charName', charName)
         localStorage.setItem('charClass', selectedClass)
-        initializeGame()
+        enterDungeon()
     })
     backButton.addEventListener('click', splashScreen)
 }

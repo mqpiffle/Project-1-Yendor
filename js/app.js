@@ -2,6 +2,8 @@
 const gridSize = 48
 const tileCenter = gridSize / 2
 let actorList = []
+let gameWorld
+let gameUI
 let playerCharacter
 let baseUI
 
@@ -79,391 +81,200 @@ class GameObject {
         }
     }
 }
-class MobileObject extends GameObject {
-    constructor (uid, actorListArrayPos, gridPos, canvas, ctx, width, height) {
-        super(canvas, ctx, width, height)
-        this.uid = uid
-        this.gridPos = gridPos
-        this.actorListArrayPos = actorListArrayPos
-        this.xPos = this.gridPos[0]
-        this.yPos = this.gridPos[1]
-        this.gridX = this.xPos / gridSize + tileCenter
-        this.gridY = this.yPos / gridSize + tileCenter
-        this.characterType = 'MOB'
-        this.alive = true
-        this.maxHealth = 120
-        this.currentHealth = 120
-        this.maxEnergy = 100
-        this.currentEnergy = 100
-        this.physAttack = 10
-        this.magAttack = 0
-        this.attackType = ''
-        this.physResist = 0
-        this.magResist = 0
-        this.potionCharges = 1
-        // this.targUp = [this.xPos, this.yPos - gridSize]
-        // this.boundUp = this.yPos > tileCenter
-        // this.deltaUp = function() {
-        //     console.log(`move up`)
+// class MobileObject extends GameObject {
+//     constructor (uid, actorListArrayPos, gridPos, canvas, ctx, width, height) {
+//         super(canvas, ctx, width, height)
+//         this.uid = uid
+//         this.gridPos = gridPos
+//         this.actorListArrayPos = actorListArrayPos
+//         this.xPos = this.gridPos[0]
+//         this.yPos = this.gridPos[1]
+//         this.gridX = this.xPos / gridSize + tileCenter
+//         this.gridY = this.yPos / gridSize + tileCenter
+//         this.characterType = 'MOB'
+//         this.alive = true
+//         this.maxHealth = 120
+//         this.currentHealth = 120
+//         this.maxEnergy = 100
+//         this.currentEnergy = 100
+//         this.physAttack = 10
+//         this.magAttack = 0
+//         this.attackType = ''
+//         this.physResist = 0
+//         this.magResist = 0
+//         this.potionCharges = 1
+//         // this.targUp = [this.xPos, this.yPos - gridSize]
+//         // this.boundUp = this.yPos > tileCenter
+//         // this.deltaUp = function() {
+//         //     console.log(`move up`)
             
-        //     this.yPos -= gridSize
-        //     return this.yPos
-        // }
-    }
+//         //     this.yPos -= gridSize
+//         //     return this.yPos
+//         // }
+//     }
     
-    // this deltaUp is causing the issue!!
+//     // this deltaUp is causing the issue!!
     
 
-    // deltaDown = function() {
-    //     return this.yPos += gridSize
-    // }
+//     // deltaDown = function() {
+//     //     return this.yPos += gridSize
+//     // }
 
-    // deltaRight = function() {
-    //     return this.xPos += gridSize
-    // }
+//     // deltaRight = function() {
+//     //     return this.xPos += gridSize
+//     // }
 
-    // deltaLeft = function() {
-    //     return this.xPos -= gridSize
-    // }
+//     // deltaLeft = function() {
+//     //     return this.xPos -= gridSize
+//     // }
 
-    // ***I feel like these can be refactored into one 'move' function, maybe later***
-    // move = function(targPos, boundCheck, moveDir1, moveDir2) {
-    //     console.log(gridSize)
-    //     console.log(`target position: ${targPos}, boundary check: ${boundCheck}, move direction: ${moveDir1()}`)
-    //     const targetAt = actorAt(targPos[0], targPos[1])
-    //     if (!isCollision(targPos[0], targPos[1]) && boundCheck) {
-    //         moveDir1()
-    //     } else if (isCollision(targPos[0], targPos[1]) && this.enemyType === targetAt.characterType) {
-    //         targetAt.currentHealth= this.attack(targetAt)
-    //         console.log(targetAt.currentHealth)
-    //         if (targetAt.characterType === 'ENEMY' && targetAt.currentHealth<= 0) {
-    //             enemyDefeat(targetAt)
-    //         }
-    //     }
-    // }
-    usePotion = function() {
-        if (this.maxHealth - this.currentHealth < 50) {
-            this.currentHealth = this.maxHealth
-        } else {
-            this.currentHealth += 50
-        }
-        console.log(`potion used, current health ${this.currentHealth}/${this.maxHealth}`)
-        this.endTurn()
-    }
+//     // ***I feel like these can be refactored into one 'move' function, maybe later***
+//     // move = function(targPos, boundCheck, moveDir1, moveDir2) {
+//     //     console.log(gridSize)
+//     //     console.log(`target position: ${targPos}, boundary check: ${boundCheck}, move direction: ${moveDir1()}`)
+//     //     const targetAt = actorAt(targPos[0], targPos[1])
+//     //     if (!isCollision(targPos[0], targPos[1]) && boundCheck) {
+//     //         moveDir1()
+//     //     } else if (isCollision(targPos[0], targPos[1]) && this.enemyType === targetAt.characterType) {
+//     //         targetAt.currentHealth= this.attack(targetAt)
+//     //         console.log(targetAt.currentHealth)
+//     //         if (targetAt.characterType === 'ENEMY' && targetAt.currentHealth<= 0) {
+//     //             enemyDefeat(targetAt)
+//     //         }
+//     //     }
+//     // }
+//     usePotion = function() {
+//         if (this.maxHealth - this.currentHealth < 50) {
+//             this.currentHealth = this.maxHealth
+//         } else {
+//             this.currentHealth += 50
+//         }
+//         console.log(`potion used, current health ${this.currentHealth}/${this.maxHealth}`)
+//         this.endTurn()
+//     }
 
-    useSkill = function(skillToUse) {
-        // itialize the skill
-        // nonono -- move the targetting logic here, then fire off the skill on [Enter]!!
-        skillToUse.init()
-    }
+//     useSkill = function(skillToUse) {
+//         // itialize the skill
+//         // nonono -- move the targetting logic here, then fire off the skill on [Enter]!!
+//         skillToUse.init()
+//     }
 
-    attack = function(target)  {
-        let defenderHealth = target.currentHealth
-        const incomingDamage = this.physAttack - (this.physAttack * target.physResist) + this.magAttack - (this.magAttack * target.magResist)
-        defenderHealth = defenderHealth - incomingDamage
-        console.log(`${this.uid} deals ${incomingDamage} to ${target.uid}`)
-        return defenderHealth
-    }
+//     attack = function(target)  {
+//         let defenderHealth = target.currentHealth
+//         const incomingDamage = this.physAttack - (this.physAttack * target.physResist) + this.magAttack - (this.magAttack * target.magResist)
+//         defenderHealth = defenderHealth - incomingDamage
+//         console.log(`${this.uid} deals ${incomingDamage} to ${target.uid}`)
+//         return defenderHealth
+//     }
 
-    moveUp = function() {
-        const targetAt = actorAt(this.xPos, this.yPos - gridSize)
-        if (!isCollision(this.xPos, this.yPos - gridSize) && this.yPos > tileCenter) {
-            this.yPos -= gridSize
-        } else if (isCollision(this.xPos, this.yPos - gridSize) && this.enemyType === targetAt.characterType) {
-            targetAt.currentHealth= this.attack(targetAt)
-            console.log(targetAt.currentHealth)
-            if (targetAt.characterType === 'ENEMY' && targetAt.currentHealth<= 0) {
-                enemyDefeat(targetAt)
-            }
-        }
-        // console.log('up')
-    }
-    moveUpRight = function() {
-        const targetAt = actorAt(this.xPos + gridSize, this.yPos - gridSize)
-        if (!isCollision(this.xPos + gridSize, this.yPos - gridSize) && this.yPos > tileCenter && this.xPos < this.width - tileCenter) {
-            this.yPos -= gridSize
-            this.xPos += gridSize
-        } else if (isCollision(this.xPos + gridSize, this.yPos - gridSize) && this.enemyType === targetAt.characterType) {
-            targetAt.currentHealth= this.attack(targetAt)
-            console.log(targetAt.currentHealth)
-            if (targetAt.characterType === 'ENEMY' && targetAt.currentHealth<= 0) {
-                enemyDefeat(targetAt)
-            }
-        }
-        // console.log('up-right')
-    }
-    moveRight = function() {
-        const targetAt = actorAt(this.xPos + gridSize, this.yPos)
-        if (!isCollision(this.xPos + gridSize, this.yPos) && this.xPos < this.width - tileCenter) {
-            this.xPos += gridSize
-        } else if (isCollision(this.xPos + gridSize, this.yPos) && this.enemyType === targetAt.characterType) {
-            targetAt.currentHealth= this.attack(targetAt)
-            console.log(targetAt.currentHealth)
-            if (targetAt.characterType === 'ENEMY' && targetAt.currentHealth<= 0) {
-                enemyDefeat(targetAt)
-            }
-        }
-        // console.log('right')
-    }
-    moveDownRight = function() {
-        const targetAt = actorAt(this.xPos + gridSize, this.yPos + gridSize)
-        if (!isCollision(this.xPos + gridSize, this.yPos + gridSize) && this.yPos < this.height - tileCenter && this.xPos < this.width - tileCenter ) {
-        this.yPos += gridSize
-        this.xPos += gridSize
-        } else if (isCollision(this.xPos + gridSize, this.yPos + gridSize) && this.enemyType === targetAt.characterType) {
-            targetAt.currentHealth= this.attack(targetAt)
-            console.log(targetAt.currentHealth)
-            if (targetAt.characterType === 'ENEMY' && targetAt.currentHealth<= 0) {
-                enemyDefeat(targetAt)
-            }
-        }
-        // console.log('down-right')
-    }
-    moveDown = function() {
-        const targetAt = actorAt(this.xPos, this.yPos + gridSize)
-        if (!isCollision(this.xPos, this.yPos + gridSize) && this.yPos < this.height - tileCenter) {
-            this.yPos += gridSize
-        } else if (isCollision(this.xPos, this.yPos + gridSize) && this.enemyType === targetAt.characterType) {
-            targetAt.currentHealth= this.attack(targetAt)
-            console.log(targetAt.currentHealth)
-            if (targetAt.characterType === 'ENEMY' && targetAt.currentHealth<= 0) {
-                enemyDefeat(targetAt)
-            }
-        }
-        // console.log('down')
-    }
-    moveDownLeft = function() {
-        const targetAt = actorAt(this.xPos - gridSize, this.yPos + gridSize)
-        if (!isCollision(this.xPos - gridSize, this.yPos + gridSize) && this.yPos < this.height - tileCenter && this.xPos > tileCenter) {
-            this.yPos += gridSize
-            this.xPos -= gridSize
-        } else if (isCollision(this.xPos - gridSize, this.yPos + gridSize) && this.enemyType === targetAt.characterType) {
-            targetAt.currentHealth= this.attack(targetAt)
-            console.log(targetAt.currentHealth)
-            if (targetAt.characterType === 'ENEMY' && targetAt.currentHealth<= 0) {
-                enemyDefeat(targetAt)
-            }
-        // console.log('down-left')
-        }
-    }
-    moveLeft = function() {
-        const targetAt = actorAt(this.xPos - gridSize, this.yPos)
-        if (!isCollision(this.xPos - gridSize, this.yPos) && this.xPos > tileCenter) {
-            this.xPos -= gridSize
-        } else if (isCollision(this.xPos - gridSize, this.yPos) && this.enemyType === targetAt.characterType) {
-            targetAt.currentHealth= this.attack(targetAt)
-            console.log(targetAt.currentHealth)
-            if (targetAt.characterType === 'ENEMY' && targetAt.currentHealth<= 0) {
-                enemyDefeat(targetAt)
-            }
-        }
-        // console.log('left')
-    }
-    moveUpLeft = function() {
-        const targetAt = actorAt(this.xPos - gridSize, this.yPos - gridSize)
-        if (!isCollision(this.xPos - gridSize, this.yPos - gridSize) && this.yPos > tileCenter && this.xPos > tileCenter) {
-            this.yPos -= gridSize
-            this.xPos -= gridSize
-        } else if (isCollision(this.xPos - gridSize, this.yPos - gridSize) && this.enemyType === targetAt.characterType) {
-            targetAt.currentHealth= this.attack(targetAt)
-            console.log(targetAt.currentHealth)
-            if (targetAt.characterType === 'ENEMY' && targetAt.currentHealth<= 0) {
-                enemyDefeat(targetAt)
-            }
-        }
-    }
-}
-
-// the player character inherits the MOB's traits, and adds its own (specifically move and other action methods)
-class PlayerCharacter extends MobileObject {
-    constructor (uid, charClass, actorListArrayPos, gridPos, characterType, physAttack, magAttack, canvas, ctx, width, height, xPos, yPos) {
-        super(uid, charClass, actorListArrayPos, gridPos, characterType, physAttack, magAttack, canvas, ctx, width, height, xPos, yPos)
-        this.uid = uid
-        this.charClass = charClass
-        this.actorListArrayPos = actorListArrayPos
-        this.gridPos = gridPos
-        this.xPos = this.gridPos[0]
-        this.yPos = this.gridPos[1]
-        this.gridX = this.xPos / gridSize + tileCenter
-        this.gridY = this.yPos / gridSize + tileCenter
-        this.weapon = this.charClass.weapon
-        this.characterType = 'PC'
-        this.enemyType = 'ENEMY'
-        this.displayColor = 'skyBlue'
-        this.level = 1
-        this.xp = 0
-        this.xpToNextLevel = 100
-        this.physAttack = this.charClass.physAttack
-    }
-
-    render = function () {
-        const pcSprite = new Image()
-        pcSprite.onload = () => {
-            this.ctx.drawImage(pcSprite, this.xPos - tileCenter, this.yPos - tileCenter, gridSize, gridSize)
-        }
-        pcSprite.src = /* '../images/DoY_warrior_1.png' */ 'https://imgur.com/qN08WlD' || this.charClass.sprite
-        console.log(`pc sprite: ${this.charClass.sprite}`)
-        // this.ctx.beginPath()
-        // this.ctx.arc(this.xPos, this.yPos, gridSize / 3, 0, 2.0 * Math.PI)
-        // this.ctx.fillStyle = this.displayColor
-        // this.ctx.fill()
-    }
-
-    endTurn = function() {
-        if (playerCharacter.currentHealth <= 0) {
-            this.gameOver('lose')
-        } 
-        if (actorList.length === 1) {
-            this.gameOver('win')
-        }
-        this.ctx.clearRect(0, 0, this.width, this.height)
-        this.mapDraw()
-        actorList.splice(0, 1, playerCharacter)
-        setTimeout(() => {
-            actorList[0].render()
-        }, 100)
-        
-        // console.log(actorList[0].currentHealth)
-        for (let i = 1; i < actorList.length; i++) {
-            let enemy = actorList[i]
-            enemy.actorListArrayPos = i
-            enemy.decisionHandler()
-            actorList.splice(enemy.actorListArrayPos, 1, enemy)
-            enemy.render('hotPink')
-        }
-        baseUI.update(this.currentHealth, this.maxHealth, this.xp, this.xpToNextLevel)
-        this.ctx.save()
-    }
-
-    
-    pcActionHandler = function(key) {
-        // SKILLS -- keys 1,2,3
-        if (key === 'Digit1') {
-            this.useSkill(this.charClass.weapon.skills[0])
-            // this.move(this.targUp, this.boundUp, this.deltaUp)
-            // console.log(`x: ${this.xPos}, y: ${this.yPos}`)
-        }
-        if (key === 'Digit2') {
-            this.useSkill(this.charClass.weapon.skills[1])
-        }
-        if (key === 'Digit3') {            
-            this.useSkill(this.charClass.weapon.skills[2])
-        }
-        // USE POTION = 'p', heal up to 50 hp
-        if (key === 'KeyP') {     
-            this.usePotion()
-        }
-        // MOVES -- we'll use the numPad for movement and explicitly define the diagonals
-        if (key === 'Numpad8') {
-            this.moveUp()
-            // this.move(this.targUp, this.boundUp, this.deltaUp)
-            // console.log(`x: ${this.xPos}, y: ${this.yPos}`)
-        this.endTurn()
-        }
-        if (key === 'Numpad9') {
-            this.moveUpRight()
-            this.endTurn()
-        }
-        if (key === 'Numpad6') {            
-            this.moveRight()
-            this.endTurn()
-        }
-        if (key === 'Numpad3') {
-            this.moveDownRight()
-            this.endTurn()
-        }
-        if (key === 'Numpad2') {
-            this.moveDown()
-            this.endTurn()
-        }
-        if (key === 'Numpad1') {
-            this.moveDownLeft()
-            this.endTurn()
-        }
-        if (key === 'Numpad4') {
-            this.moveLeft()
-            this.endTurn()
-        }
-        if (key === 'Numpad7') {
-            this.moveUpLeft()
-            this.endTurn()
-        }
-    }
-}
-// class PlayerClass extends PlayerCharacter {
-//     constructor() {
-//         super()
-//         this.class = localStorage.getItem('charClass')
+//     moveUp = function() {
+//         const targetAt = actorAt(this.xPos, this.yPos - gridSize)
+//         if (!isCollision(this.xPos, this.yPos - gridSize) && this.yPos > tileCenter) {
+//             this.yPos -= gridSize
+//         } else if (isCollision(this.xPos, this.yPos - gridSize) && this.enemyType === targetAt.characterType) {
+//             targetAt.currentHealth= this.attack(targetAt)
+//             console.log(targetAt.currentHealth)
+//             if (targetAt.characterType === 'ENEMY' && targetAt.currentHealth<= 0) {
+//                 enemyDefeat(targetAt)
+//             }
+//         }
+//         // console.log('up')
+//     }
+//     moveUpRight = function() {
+//         const targetAt = actorAt(this.xPos + gridSize, this.yPos - gridSize)
+//         if (!isCollision(this.xPos + gridSize, this.yPos - gridSize) && this.yPos > tileCenter && this.xPos < this.width - tileCenter) {
+//             this.yPos -= gridSize
+//             this.xPos += gridSize
+//         } else if (isCollision(this.xPos + gridSize, this.yPos - gridSize) && this.enemyType === targetAt.characterType) {
+//             targetAt.currentHealth= this.attack(targetAt)
+//             console.log(targetAt.currentHealth)
+//             if (targetAt.characterType === 'ENEMY' && targetAt.currentHealth<= 0) {
+//                 enemyDefeat(targetAt)
+//             }
+//         }
+//         // console.log('up-right')
+//     }
+//     moveRight = function() {
+//         const targetAt = actorAt(this.xPos + gridSize, this.yPos)
+//         if (!isCollision(this.xPos + gridSize, this.yPos) && this.xPos < this.width - tileCenter) {
+//             this.xPos += gridSize
+//         } else if (isCollision(this.xPos + gridSize, this.yPos) && this.enemyType === targetAt.characterType) {
+//             targetAt.currentHealth= this.attack(targetAt)
+//             console.log(targetAt.currentHealth)
+//             if (targetAt.characterType === 'ENEMY' && targetAt.currentHealth<= 0) {
+//                 enemyDefeat(targetAt)
+//             }
+//         }
+//         // console.log('right')
+//     }
+//     moveDownRight = function() {
+//         const targetAt = actorAt(this.xPos + gridSize, this.yPos + gridSize)
+//         if (!isCollision(this.xPos + gridSize, this.yPos + gridSize) && this.yPos < this.height - tileCenter && this.xPos < this.width - tileCenter ) {
+//         this.yPos += gridSize
+//         this.xPos += gridSize
+//         } else if (isCollision(this.xPos + gridSize, this.yPos + gridSize) && this.enemyType === targetAt.characterType) {
+//             targetAt.currentHealth= this.attack(targetAt)
+//             console.log(targetAt.currentHealth)
+//             if (targetAt.characterType === 'ENEMY' && targetAt.currentHealth<= 0) {
+//                 enemyDefeat(targetAt)
+//             }
+//         }
+//         // console.log('down-right')
+//     }
+//     moveDown = function() {
+//         const targetAt = actorAt(this.xPos, this.yPos + gridSize)
+//         if (!isCollision(this.xPos, this.yPos + gridSize) && this.yPos < this.height - tileCenter) {
+//             this.yPos += gridSize
+//         } else if (isCollision(this.xPos, this.yPos + gridSize) && this.enemyType === targetAt.characterType) {
+//             targetAt.currentHealth= this.attack(targetAt)
+//             console.log(targetAt.currentHealth)
+//             if (targetAt.characterType === 'ENEMY' && targetAt.currentHealth<= 0) {
+//                 enemyDefeat(targetAt)
+//             }
+//         }
+//         // console.log('down')
+//     }
+//     moveDownLeft = function() {
+//         const targetAt = actorAt(this.xPos - gridSize, this.yPos + gridSize)
+//         if (!isCollision(this.xPos - gridSize, this.yPos + gridSize) && this.yPos < this.height - tileCenter && this.xPos > tileCenter) {
+//             this.yPos += gridSize
+//             this.xPos -= gridSize
+//         } else if (isCollision(this.xPos - gridSize, this.yPos + gridSize) && this.enemyType === targetAt.characterType) {
+//             targetAt.currentHealth= this.attack(targetAt)
+//             console.log(targetAt.currentHealth)
+//             if (targetAt.characterType === 'ENEMY' && targetAt.currentHealth<= 0) {
+//                 enemyDefeat(targetAt)
+//             }
+//         // console.log('down-left')
+//         }
+//     }
+//     moveLeft = function() {
+//         const targetAt = actorAt(this.xPos - gridSize, this.yPos)
+//         if (!isCollision(this.xPos - gridSize, this.yPos) && this.xPos > tileCenter) {
+//             this.xPos -= gridSize
+//         } else if (isCollision(this.xPos - gridSize, this.yPos) && this.enemyType === targetAt.characterType) {
+//             targetAt.currentHealth= this.attack(targetAt)
+//             console.log(targetAt.currentHealth)
+//             if (targetAt.characterType === 'ENEMY' && targetAt.currentHealth<= 0) {
+//                 enemyDefeat(targetAt)
+//             }
+//         }
+//         // console.log('left')
+//     }
+//     moveUpLeft = function() {
+//         const targetAt = actorAt(this.xPos - gridSize, this.yPos - gridSize)
+//         if (!isCollision(this.xPos - gridSize, this.yPos - gridSize) && this.yPos > tileCenter && this.xPos > tileCenter) {
+//             this.yPos -= gridSize
+//             this.xPos -= gridSize
+//         } else if (isCollision(this.xPos - gridSize, this.yPos - gridSize) && this.enemyType === targetAt.characterType) {
+//             targetAt.currentHealth= this.attack(targetAt)
+//             console.log(targetAt.currentHealth)
+//             if (targetAt.characterType === 'ENEMY' && targetAt.currentHealth<= 0) {
+//                 enemyDefeat(targetAt)
+//             }
+//         }
 //     }
 // }
-
-class EnemyCharacter extends MobileObject {
-    constructor(uid, actorListArrayPos, gridPos, characterType, physAttack, magAttack, canvas, ctx, width, height, xPos, yPos, currentHealth) {
-        super(uid, actorListArrayPos, gridPos, characterType, physAttack, magAttack, canvas, ctx, width, height, xPos, yPos, currentHealth)
-        this.uid = uid
-        this.characterType = 'ENEMY'
-        this.enemyType = 'GOBLIN'
-        this.xpValue = 25
-    }
-    render = function (displayColor) {
-        this.ctx.font = '24px sans-serif'
-        // ctx.textBaseLine = 'middle'
-        this.ctx.textAlign = 'center'
-        this.ctx.fillStyle = displayColor
-        this.ctx.fillText(`${this.actorListArrayPos}`, this.xPos, this.yPos + 8)
-    }
-    // attackHandler = function() {
-    //     //we're just going with melee and physAttack for now
-
-    // }
-    movementHandler = function() {
-        const pcX = actorList[0].xPos
-        const pcY = actorList[0].yPos
-        const x = this.xPos
-        const y = this.yPos
-        if (Math.abs(pcY - y) === Math.abs(pcX - x)) {
-            if (pcY < y && pcX > x) {
-                this.moveUpRight()
-            }
-            if (pcY > y && pcX > x) {
-                this.moveDownRight()
-            }
-            if (pcY > y && pcX < x) {
-                this.moveDownLeft()
-            }
-            if (pcY < y && pcX < x) {
-                this.moveUpLeft()
-            }
-        }
-        if (Math.abs(pcY - y) > Math.abs(pcX - x)) {
-            if (pcY < y) {
-                this.moveUp()
-            }
-            if (pcY > y) {
-                this.moveDown()
-            }
-        } else {
-            if (pcX > x) {
-                this.moveRight()
-            }
-            if (pcX < x) {
-                this.moveLeft()
-            }
-        }
-    }
-    decisionHandler = function() {
-        // console.log(`x distance to pc ${Math.abs(this.xPos - playerCharacter.xPos)}, y distance to pc ${Math.abs(this.yPos - playerCharacter.yPos)}`)
-        //if the distance between the pc in both directions === 1
-        if (Math.abs(this.xPos - actorList[0].xPos) <= gridSize && Math.abs(this.yPos - actorList[0].yPos) <= gridSize) {
-            console.log(`ATTACK!`)
-            //attack the enemy
-            actorList[0].currentHealth = this.attack(actorList[0])
-        } else {
-            //else move towards the pc
-            this.movementHandler()
-        }
-    }
-}
 
 class GameWorld extends GameObject {
     constructor(canvas, ctx) {

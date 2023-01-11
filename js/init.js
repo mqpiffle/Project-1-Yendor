@@ -1,4 +1,4 @@
-const initializeGame = () => {
+const enterDungeon = () => {
     const chosenClass = localStorage.getItem('charClass')
     let characterClass
 
@@ -10,17 +10,18 @@ const initializeGame = () => {
         characterClass = Wizard
     }
 
-    baseUI = new GameUI(characterClass)
-    baseUI.init()
+    gameUI = new GameUI(characterClass)
+    gameUI.init()
     // hmmm...now the game can't figure out canvas? because it doesn't exist
-    const floorOne = new GameWorld()
-    floorOne.mapDraw()
+    gameWorld = new GameWorld()
+    gameWorld.mapDraw()
 
-    playerCharacter = new PlayerCharacter(`pc0`, characterClass, 0, floorOne.pcSpawnCoordinates())
+    playerCharacter = new PlayerCharacter(`pc0`, characterClass, 0, gameWorld.pcSpawnCoordinates())
     playerCharacter.render()
     // console.debug(`character class object ${characterClass}`)
     // console.log(`pc grid pos: ${playerCharacter.gridPos}`)
     actorList.push(playerCharacter)
 
-    floorOne.enemySpawn(5)
+
+    gameWorld.enemySpawn(5)
 }
