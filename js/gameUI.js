@@ -319,15 +319,15 @@ const characterSelectionScreen = () => {
   warriorButton.id = "warrior-select-button";
   warriorButton.className = "UI-character-select-button";
   warriorButton.classList.add("selected-class");
-  const warriorImage = document.createElement("img");
+  const warriorImage = new Image();
   const huntressButton = document.createElement("button");
   huntressButton.id = "huntress-select-button";
   huntressButton.className = "UI-character-select-button";
-  const huntressImage = document.createElement("img");
+  const huntressImage = new Image();
   const wizardButton = document.createElement("button");
   wizardButton.id = "wizard-select-button";
   wizardButton.className = "UI-character-select-button";
-  const wizardImage = document.createElement("img");
+  const wizardImage = new Image();
   const buttonNavDiv = document.createElement("div");
   buttonNavDiv.id = "characters-select-button-nav-container";
   buttonNavDiv.className = "UI-button-nav-container";
