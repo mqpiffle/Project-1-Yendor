@@ -107,7 +107,7 @@ class GameUI {
     gameCurrentWeaponText.innerText = `${this.characterClass.weapon.displayTitle}`;
     const gameCurrentWeaponImage = document.createElement("img");
     gameCurrentWeaponImage.id = "game-current-weapon-image";
-    gameCurrentWeaponImage.src = "../images/sword_and_shield_rusty_1.png";
+    gameCurrentWeaponImage.src = "images/sword_and_shield_rusty_1.png";
     gameCurrentWeaponImage.height = "32";
     gameCurrentWeaponImage.width = "32";
 
